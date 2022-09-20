@@ -43,15 +43,16 @@ from provenance_rename_operator import ProvenanceRenameOperator
 from swift_operator import SwiftOperator
 
 
-dag_id = "rioolnetwerk"
+dag_id = "rioolnetwerk_khalid"
 tmp_dir: str = f"{SHARED_DIR}/{dag_id}"
 tmp_database_schema: str = define_temp_db_schema(dataset_name=dag_id)
 variables: dict = Variable.get(dag_id, deserialize_json=True)
-files_to_download = variables["files_to_download"]
+files_to_download = dict[str, str] = variables["files_to_download"]
 total_checks = []
 count_checks = []
 geo_checks = []
 check_name = {}
+
 
 # prefill pg_params method with dataset name so
 # it can be used for the database connection as a user.
@@ -79,7 +80,7 @@ with DAG(
     make_temp_dir = mk_dir(Path(tmp_dir))
 
     # 3. Download data
-'''   download_data = [
+    download_data = [
         SwiftOperator(
             task_id=f"download_{file_name}",
             swift_conn_id="objectstore-waternet", # laatste 2 namen van key-vault-string gebruiken (airflow-connections-objectstore-waternet)
@@ -93,7 +94,7 @@ with DAG(
     ]
 
      
-    # 4. Import .gpkg to Postgresql
+'''    # 4. Import .gpkg to Postgresql
     # NOTE: ogr2ogr demands the PK is of type integer.
     # ook hier kom ik BashOperator tegen die ogr2ogr gebruikt...
     import_data = [
@@ -116,7 +117,7 @@ with DAG(
 '''    (
     slack_at_start
     >> make_temp_dir 
-#    >> download_data
+    >> download_data
 #    >> import_data
     )
 
