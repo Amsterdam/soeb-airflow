@@ -50,6 +50,7 @@ tmp_dir: str = f"{SHARED_DIR}/{dag_id}"
 tmp_database_schema: str = define_temp_db_schema(dataset_name=dag_id)
 variables: dict = Variable.get(dag_id, deserialize_json=True)
 files_to_download = variables["files_to_download"]
+
 total_checks = []
 count_checks = []
 geo_checks = []
@@ -84,15 +85,15 @@ with DAG(
     # 3. Download data
     download_data = [
         SwiftOperator(
-            task_id=f"download_{file_name}",
+            task_id=f"download_{file_namez}",
             swift_conn_id="objectstore-waternet", # laatste 2 namen van key-vault-string gebruiken (airflow-connections-objectstore-waternet)
             container="production", # map in de objectstore
-            object_id=file_name,
-            output_path=f"{tmp_dir}/{file_name}",
+            object_id=file_namez,
+            output_path=f"{tmp_dir}/{file_namez}",
         )
         #for file_name, url in data_endpoints.items() # check vars.yml
         # op meerdere plekken zie ik .values() vs .items() staan...ff checken
-        for file_name in files_to_download # 1
+        for file_namez in files_to_download # 1
     ]
 
      
