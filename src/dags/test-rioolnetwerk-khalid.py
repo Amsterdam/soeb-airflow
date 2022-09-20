@@ -98,7 +98,7 @@ with DAG(
         )
         #for file_name, url in data_endpoints.items() # check vars.yml
         # op meerdere plekken zie ik .values() vs .items() staan...ff checken
-        for key, file_name in files_to_download.items() # 1
+        for key, file_name in files_to_download # 2
     ]
 
      
