@@ -1,8 +1,8 @@
 rioolnetwerk:
   files_to_download: 
     waternet: Waternet_Assets_Levering.gpkg
-    dummy: Disclaimer + uitleg Z bepaling.txt
+    dummy: Disclaimer_uitleg_Z _bepaling.txt
 rioolnetwerk_khalid:
   files_to_download: 
     waternet: Waternet_Assets_Levering.gpkg
-    dummy: Disclaimer + uitleg Z bepaling.txt
+    dummy: Disclaimer_uitleg_Z _bepaling.txt
