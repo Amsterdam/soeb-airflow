@@ -90,7 +90,7 @@ with DAG(
     # 3. Download data
     task2 = [
         SwiftOperator(
-            task_id=f"download_file_{key}",
+            task_id=f"download_file_{file_name}",
             swift_conn_id="objectstore-waternet", # laatste 2 namen van key-vault-string gebruiken (airflow-connections-objectstore-waternet)
             container="development", # map in de objectstore
             object_id=file_name,
@@ -98,7 +98,7 @@ with DAG(
         )
         #for file_name, url in data_endpoints.items() # check vars.yml
         # op meerdere plekken zie ik .values() vs .items() staan...ff checken
-        for key, file_name in files_to_download # 2
+        for file_name in files_to_download # 3
     ]
 
      
