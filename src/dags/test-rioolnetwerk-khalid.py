@@ -49,7 +49,7 @@ dag_id = "rioolnetwerk_khalid"
 tmp_dir: str = f"{SHARED_DIR}/{dag_id}"
 tmp_database_schema: str = define_temp_db_schema(dataset_name=dag_id)
 variables: dict = Variable.get(dag_id, deserialize_json=True)
-files_to_download = dict[str, str] = variables["files_to_download"]
+files_to_download = variables["files_to_download"]
 total_checks = []
 count_checks = []
 geo_checks = []
