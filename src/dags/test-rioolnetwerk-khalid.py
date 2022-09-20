@@ -41,6 +41,8 @@ from provenance_rename_operator import ProvenanceRenameOperator
 #from sql.precariobelasting_add import ADD_GEBIED_COLUMN, ADD_TITLE, RENAME_DATAVALUE_GEBIED
 # wordt gebruikt om data op te halen (objectstore?)
 from swift_operator import SwiftOperator
+from common.path import mk_dir
+from pathlib import Path
 
 
 dag_id = "rioolnetwerk_khalid"
