@@ -1,8 +1,6 @@
+generic:
+  test: []
 rioolnetwerk:
   files_to_download: 
-    waternet: Waternet_Assets_Levering.gpkg
-    dummy: Disclaimer_uitleg_Z _bepaling.txt
-rioolnetwerk_khalid:
-  files_to_download: 
-    waternet: Waternet_Assets_Levering.gpkg
-    dummy: Disclaimer_uitleg_Z _bepaling.txt
+    gpkg_file: Waternet_Assets_Levering.gpkg
+    txt_file: Disclaimer_uitleg_Z_bepaling.txt 

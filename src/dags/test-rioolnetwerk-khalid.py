@@ -45,7 +45,7 @@ from common.path import mk_dir
 from pathlib import Path
 
 
-dag_id = "rioolnetwer"
+dag_id = "rioolnetwerk"
 tmp_dir: str = f"{SHARED_DIR}/{dag_id}"
 tmp_database_schema: str = define_temp_db_schema(dataset_name=dag_id)
 variables: dict = Variable.get(dag_id, deserialize_json=True)
@@ -92,7 +92,7 @@ with DAG(
         )
         #for file_name, url in data_endpoints.items() # check vars.yml
         # op meerdere plekken zie ik .values() vs .items() staan...ff checken
-        for file_name, url in files_to_download.items() # veranderd naar .items
+        for file_name, url in files_to_download # veranderd naar .items
     ]
 
      
