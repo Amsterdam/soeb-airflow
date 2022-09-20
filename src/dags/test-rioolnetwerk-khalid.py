@@ -88,7 +88,7 @@ with DAG(
     make_temp_dir = mk_dir(Path(tmp_dir))
 
     # 3. Download data
-    download_data = [
+    task2 = [
         SwiftOperator(
             task_id=f"download_{file_name}",
             swift_conn_id="objectstore-waternet", # laatste 2 namen van key-vault-string gebruiken (airflow-connections-objectstore-waternet)
@@ -125,7 +125,7 @@ with DAG(
 '''    (
     slack_at_start
     >> make_temp_dir 
-    >> download_data
+    >> task2
 #    >> import_data
     )
 
