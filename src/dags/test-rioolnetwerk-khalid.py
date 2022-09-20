@@ -27,6 +27,11 @@ from common.db import define_temp_db_schema, pg_params
 from common.sql import SQL_DROP_TABLE
 # mag niet weg maar gaat om logging
 from contact_point.callbacks import get_contact_point_on_failure_callback
+
+from airflow.utils.task_group import TaskGroup
+
+from airflow.models import BaseOperator
+
 # ogr2ogr operator (duidelijk)
 from ogr2ogr_operator import Ogr2OgrOperator
 # checks zoals srid enz...(ook voorgefineerd te vinden op ?)
@@ -85,15 +90,15 @@ with DAG(
     # 3. Download data
     download_data = [
         SwiftOperator(
-            task_id=f"download_{file_namez}",
+            task_id=f"download_{file_name}",
             swift_conn_id="objectstore-waternet", # laatste 2 namen van key-vault-string gebruiken (airflow-connections-objectstore-waternet)
             container="production", # map in de objectstore
-            object_id=file_namez,
-            output_path=f"{tmp_dir}/{file_namez}",
+            object_id=file_name,
+            output_path=f"{tmp_dir}/{file_name}",
         )
         #for file_name, url in data_endpoints.items() # check vars.yml
         # op meerdere plekken zie ik .values() vs .items() staan...ff checken
-        for file_namez in files_to_download # 1
+        for file_name in files_to_download # 1
     ]
 
      
