@@ -85,12 +85,12 @@ with DAG(
     # 2. Create temp directory to store files
     # NOTE kan ook met bashoperator:
     # make_tmp_dir = BashOperator(task_id="mk_tmp_dir", bash_command=f"mkdir -p {tmp_dir}")
-    make_temp_dir = mk_dir(Path(tmp_dir))
+    mk_temp_dir = BashOperator(task_id="mk_temp_dir", bash_command=f"mkdir -p {tmp_dir}")
 
     # 3. Download data
     task2 = [
         SwiftOperator(
-            task_id=f"download_{file_name}",
+            task_id=f"downloading_{file_name}",
             swift_conn_id="objectstore-waternet", # laatste 2 namen van key-vault-string gebruiken (airflow-connections-objectstore-waternet)
             container="production", # map in de objectstore
             object_id=file_name,
@@ -122,11 +122,8 @@ with DAG(
         for file_name, url in files_to_download.items()
     ]
     # FLOW.
-'''    (
-    slack_at_start
-    >> make_temp_dir 
-    >> task2
-#    >> import_data
+''' (
+    slack_at_start >> mk_temp_dir >> task2 #    >> import_data
     )
 
 dag.doc_md = """
