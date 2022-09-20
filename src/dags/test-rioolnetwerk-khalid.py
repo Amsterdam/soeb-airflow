@@ -94,7 +94,7 @@ with DAG(
             swift_conn_id="objectstore-waternet", # laatste 2 namen van key-vault-string gebruiken (airflow-connections-objectstore-waternet)
             container="production", # map in de objectstore
             object_id=url,
-            output_path=f"{tmp_dir}/{file_name}",
+            output_path=f"{tmp_dir}/{url}",
         )
         #for file_name, url in data_endpoints.items() # check vars.yml
         # op meerdere plekken zie ik .values() vs .items() staan...ff checken
