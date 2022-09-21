@@ -54,7 +54,7 @@ with DAG(
     # The local database connection.
     # This secret must exists in KV: `airflow-connections-soeb-postgres`
     # with the connection string present with protocol `postgresql://`
-    DB_LOCAL_CONN_STRING: Final = BaseHook.get_connection("SOEB_POSTGRES")
+    DB_LOCAL_CONN_STRING: Final = variables.get("soeb_postgres")
 
     # 4. Import data to local database
     import_data_local_db = BashOperator(
