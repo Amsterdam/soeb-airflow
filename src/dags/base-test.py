@@ -59,7 +59,7 @@ with DAG(
     download_data = SwiftOperator(
             task_id=f"download_{file_to_download}",
             swift_conn_id="OBJECTSTORE_WATERNET",
-            container=f"production/{file_to_download}",
+            container="production",
             object_id=file_to_download,
             output_path=f"{DOWNLOAD_PATH_LOC}",
         )
