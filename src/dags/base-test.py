@@ -26,7 +26,7 @@ DATA_FILE: Final = f"{TMP_DIR}/Waternet_Assets_Levering.gpkg"
 # The local database connection.
 # This secret must exists in KV: `airflow-connections-soeb-postgres`
 # with the connection string present with protocol `postgresql://`
-DB_LOCAL_CONN_STRING: Final = BaseHook.get_connection("soeb_postgres")
+DB_LOCAL_CONN_STRING: Final = BaseHook.get_connection("SOEB_POSTGRES")
 
 
 # DAG definition
