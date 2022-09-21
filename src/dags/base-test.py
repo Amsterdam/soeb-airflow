@@ -9,6 +9,7 @@ from common import SHARED_DIR, MessageOperator, default_args, quote_string
 from common.path import mk_dir
 from contact_point.callbacks import get_contact_point_on_failure_callback
 from swift_operator import SwiftOperator
+from urllib.parse import urlparse
 
 # Schema: https://schemas.data.amsterdam.nl/datasets/rioolnetwerk/dataset
 DAG_ID: Final = "rioolnetwerk"
@@ -23,6 +24,17 @@ TMP_DIR: Final = f"{SHARED_DIR}/{DAG_ID}"
 
 # The name of the file to download
 DOWNLOAD_PATH_LOC: Final = f"{TMP_DIR}/{file_to_download}"
+
+# The local database connection.
+# This secret must exists in KV: `airflow-connections-soeb-postgres`
+# with the connection string present with protocol `postgresql://`
+SOEB_DB_CONN_STRING: Final = variables.get("soeb_postgres")
+dsn_url = urlparse(SOEB_DB_CONN_STRING)
+SOEB_HOST: Final = dsn_url.hostname
+SOEB_PORT: Final = dsn_url.port
+SOEB_USER: Final = dsn_url.username
+SOEB_PASSWD: Final = dsn_url.password
+SOEB_DBNAME: Final = dsn_url.scheme
 
 # DAG definition
 with DAG(
@@ -51,17 +63,14 @@ with DAG(
             output_path=f"{DOWNLOAD_PATH_LOC}",
         )
 
-    # The local database connection.
-    # This secret must exists in KV: `airflow-connections-soeb-postgres`
-    # with the connection string present with protocol `postgresql://`
-    DB_LOCAL_CONN_STRING: Final = variables.get("soeb_postgres")
+
 
     # 4. Import data to local database
     import_data_local_db = BashOperator(
             task_id="import_data_into_local_db",
             bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
-            f"'PG:host={DB_LOCAL_CONN_STRING.host} dbname={DB_LOCAL_CONN_STRING.schema} user={DB_LOCAL_CONN_STRING.login} \
-                password={DB_LOCAL_CONN_STRING.password} port={DB_LOCAL_CONN_STRING.port} sslmode=require' "
+            f"'PG:host={SOEB_HOST} dbname={SOEB_DBNAME} user={SOEB_USER} \
+                password={SOEB_PASSWD} port={SOEB_PORT} sslmode=require' "
             f"{DOWNLOAD_PATH_LOC} "
             "-t_srs EPSG:28992 -s_srs EPSG:28992 "
             "-lco GEOMETRY_NAME=geometry "
