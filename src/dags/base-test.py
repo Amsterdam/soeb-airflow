@@ -9,7 +9,8 @@ from common import SHARED_DIR, MessageOperator, default_args, quote_string
 from common.path import mk_dir
 from contact_point.callbacks import get_contact_point_on_failure_callback
 from swift_operator import SwiftOperator
-from urllib.parse import urlparse
+from sqlalchemy.engine.url import make_url
+
 
 # Schema: https://schemas.data.amsterdam.nl/datasets/rioolnetwerk/dataset
 DAG_ID: Final = "rioolnetwerk"
@@ -29,13 +30,14 @@ DOWNLOAD_PATH_LOC: Final = f"{TMP_DIR}/{file_to_download}"
 # This secret must exists in KV: `airflow-connections-soeb-postgres`
 # with the connection string present with protocol `postgresql://`
 #SOEB_DB_CONN_STRING: Final = Connection.get_connection_from_secrets(conn_id ="soeb_postgres" )
-SOEB_DB_CONN_STRING: Final = variables.get("soeb_postgres")
-dsn_url = urlparse(SOEB_DB_CONN_STRING)
-SOEB_HOST: Final = dsn_url.hostname
-SOEB_PORT: Final = dsn_url.port
+SOEB_DB_CONN_STRING: Final = Variable.get("soeb_postgres")
+dsn_url = make_url(SOEB_DB_CONN_STRING)
+SOEB_HOST: Final = dsn_url.host
+SOEB_PORT: Final = 5432
 SOEB_USER: Final = dsn_url.username
 SOEB_PASSWD: Final = dsn_url.password
-SOEB_DBNAME: Final = dsn_url.scheme
+SOEB_DBNAME: Final = dsn_url.database
+
 
 # DAG definition
 with DAG(
