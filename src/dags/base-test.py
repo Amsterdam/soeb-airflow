@@ -28,8 +28,8 @@ DOWNLOAD_PATH_LOC: Final = f"{TMP_DIR}/{file_to_download}"
 # The local database connection.
 # This secret must exists in KV: `airflow-connections-soeb-postgres`
 # with the connection string present with protocol `postgresql://`
-SOEB_DB_CONN_STRING: Final = Connection.get_connection_from_secrets(conn_id ="soeb_postgres" )
-# SOEB_DB_CONN_STRING: Final = variables.get("soeb_postgres")
+#SOEB_DB_CONN_STRING: Final = Connection.get_connection_from_secrets(conn_id ="soeb_postgres" )
+SOEB_DB_CONN_STRING: Final = variables.get("soeb_postgres")
 dsn_url = urlparse(SOEB_DB_CONN_STRING)
 SOEB_HOST: Final = dsn_url.hostname
 SOEB_PORT: Final = dsn_url.port
