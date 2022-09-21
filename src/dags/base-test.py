@@ -3,8 +3,8 @@ from typing import Final
 
 from airflow import DAG
 from airflow.models import Variable
+from airflow.models import Connection
 from airflow.operators.bash import BashOperator
-from airflow.hooks.base import BaseHook
 from common import SHARED_DIR, MessageOperator, default_args, quote_string
 from common.path import mk_dir
 from contact_point.callbacks import get_contact_point_on_failure_callback
@@ -28,7 +28,8 @@ DOWNLOAD_PATH_LOC: Final = f"{TMP_DIR}/{file_to_download}"
 # The local database connection.
 # This secret must exists in KV: `airflow-connections-soeb-postgres`
 # with the connection string present with protocol `postgresql://`
-SOEB_DB_CONN_STRING: Final = variables.get("soeb_postgres")
+SOEB_DB_CONN_STRING: Final = Connection.get_connection_from_secrets(conn_id ="soeb_postgres" )
+# SOEB_DB_CONN_STRING: Final = variables.get("soeb_postgres")
 dsn_url = urlparse(SOEB_DB_CONN_STRING)
 SOEB_HOST: Final = dsn_url.hostname
 SOEB_PORT: Final = dsn_url.port
@@ -58,7 +59,7 @@ with DAG(
     download_data = SwiftOperator(
             task_id=f"download_{file_to_download}",
             swift_conn_id="OBJECTSTORE_WATERNET",
-            container=f"production/waternet/{file_to_download}",
+            container=f"production/{file_to_download}",
             object_id=file_to_download,
             output_path=f"{DOWNLOAD_PATH_LOC}",
         )
