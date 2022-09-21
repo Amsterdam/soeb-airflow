@@ -1,5 +1,4 @@
 rioolnetwerk:
-  files_to_download: 
+  files_to_download:
     gpkg_file: Waternet_Assets_Levering.gpkg
     txt_file: Disclaimer_uitleg_Z_bepaling.txt
-    #test_csv_file: [testfile_2.csv, testfile_3.csv]
