@@ -14,14 +14,15 @@ from swift_operator import SwiftOperator
 # Schema: https://schemas.data.amsterdam.nl/datasets/rioolnetwerk/dataset
 DAG_ID: Final = "rioolnetwerk"
 variables: dict[str, str] = Variable.get("rioolnetwerk", deserialize_json=True)
-files_to_download: dict[str, str] = variables["files_to_download"][0]
+files_to_download: dict[str, list] = variables["files_to_download"]
+file_to_download: str = files_to_download["gpkg_file"]
 
 # The temporary directory that will be used to store the downloaded file(s)
 # to in the pod.
 TMP_DIR: Final = f"{SHARED_DIR}/{DAG_ID}"
 
 # The name of the file to download
-DATA_FILE: Final = f"{TMP_DIR}/Waternet_Assets_Levering.gpkg"
+DOWNLOAD_PATH_LOC: Final = f"{TMP_DIR}/{file_to_download}"
 
 # The local database connection.
 # This secret must exists in KV: `airflow-connections-soeb-postgres`
@@ -48,29 +49,21 @@ with DAG(
     mkdir = mk_dir(Path(TMP_DIR))
 
     # 3. Download data
-    download_data = [
-        SwiftOperator(
-            task_id=f"download_{file}",
+    download_data = SwiftOperator(
+            task_id=f"download_{file_to_download}",
             swift_conn_id="OBJECTSTORE_WATERNET",
-            container=f"production/waternet/{file}",
-            object_id=file,
-            output_path=f"{TMP_DIR}/{file}",
+            container=f"production/waternet/{file_to_download}",
+            object_id=file_to_download,
+            output_path=f"{DOWNLOAD_PATH_LOC}",
         )
-        for file in files_to_download
-    ]
 
-    # 5. Dummy operator acts as an interface between parallel tasks to
-    # another parallel tasks with different number of lanes
-    # (without this intermediar, Airflow will give an error)
-    Interface = DummyOperator(task_id="interface")
-
-    # Import data to local database
+    # 4. Import data to local database
     import_data_local_db = BashOperator(
             task_id="import_data_into_local_db",
             bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
             f"'PG:host={DB_LOCAL_CONN_STRING.host} dbname={DB_LOCAL_CONN_STRING.schema} user={DB_LOCAL_CONN_STRING.login} \
                 password={DB_LOCAL_CONN_STRING.password} port={DB_LOCAL_CONN_STRING.port} sslmode=require' "
-            f"{DATA_FILE} "
+            f"{DOWNLOAD_PATH_LOC} "
             "-t_srs EPSG:28992 -s_srs EPSG:28992 "
             "-lco GEOMETRY_NAME=geometry "
             "-nlt PROMOTE_TO_MULTI "
@@ -79,14 +72,7 @@ with DAG(
 
 
 # FLOW
-slack_at_start >> mkdir >> download_data
-
-for download in zip(download_data):
-
-    download >> Interface
-
-Interface >> import_data_local_db
-
+slack_at_start >> mkdir >> download_data >> import_data_local_db
 
 dag.doc_md = """
     #### DAG summary
