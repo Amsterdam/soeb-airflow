@@ -5,7 +5,6 @@ from airflow import DAG
 from airflow.models import Variable
 from airflow.operators.bash import BashOperator
 from airflow.hooks.base import BaseHook
-from airflow.operators.dummy import DummyOperator
 from common import SHARED_DIR, MessageOperator, default_args, quote_string
 from common.path import mk_dir
 from contact_point.callbacks import get_contact_point_on_failure_callback
