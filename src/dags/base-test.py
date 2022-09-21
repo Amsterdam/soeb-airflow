@@ -13,8 +13,8 @@ from swift_operator import SwiftOperator
 
 # Schema: https://schemas.data.amsterdam.nl/datasets/rioolnetwerk/dataset
 DAG_ID: Final = "rioolnetwerk"
-variables_covid19: dict = Variable.get("rioolnetwerk", deserialize_json=True)
-files_to_download: dict = variables_covid19["files_to_download"]
+variables: dict = Variable.get("rioolnetwerk", deserialize_json=True)
+files_to_download: dict = variables["files_to_download"]["gpkg_file"]
 
 # The temporary directory that will be used to store the downloaded file(s)
 # to in the pod.
