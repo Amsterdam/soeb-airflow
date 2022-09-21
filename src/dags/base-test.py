@@ -64,7 +64,6 @@ with DAG(
         )
 
 
-
     # 4. Import data to local database
     import_data_local_db = BashOperator(
             task_id="import_data_into_local_db",
