@@ -76,7 +76,6 @@ with DAG(
             f"{DOWNLOAD_PATH_LOC} "
             "-t_srs EPSG:28992 -s_srs EPSG:28992 "
             "-lco GEOMETRY_NAME=geometry "
-            "-nlt PROMOTE_TO_MULTI "
             "-lco FID=id",
         )
 
