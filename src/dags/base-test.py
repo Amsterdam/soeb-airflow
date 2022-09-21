@@ -27,7 +27,7 @@ DOWNLOAD_PATH_LOC: Final = f"{TMP_DIR}/{file_to_download}"
 # The local database connection.
 # This secret must exists in KV: `airflow-connections-soeb-postgres`
 # with the connection string present with protocol `postgresql://`
-DB_LOCAL_CONN_STRING: Final = BaseHook.get_connection("POSTGRES_DEFAULT")
+DB_LOCAL_CONN_STRING: Final = BaseHook.get_connection("SOEB_POSTGRES")
 
 
 # DAG definition
