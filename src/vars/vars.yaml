@@ -2,3 +2,7 @@ rioolnetwerk:
   files_to_download:
     gpkg_file: Waternet_Assets_Levering.gpkg
     txt_file: Disclaimer_uitleg_Z_bepaling.txt
+rioolnetwerk_khalid:
+  files_to_download:
+    gpkg_file: Waternet_Assets_Levering.gpkg
+    txt_file: Disclaimer_uitleg_Z_bepaling.txt
