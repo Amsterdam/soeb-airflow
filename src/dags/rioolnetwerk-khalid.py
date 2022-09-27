@@ -15,7 +15,7 @@ from sqlalchemy.engine.url import make_url
 # Schema: https://schemas.data.amsterdam.nl/datasets/rioolnetwerk/dataset
 DAG_ID: Final = "rioolnetwerk-khalid"
 variables: dict[str, str] = Variable.get("rioolnetwerk-khalid", deserialize_json=True)
-file_to_download: dict[str, list] = variables["files_to_download"]
+file_to_download: dict[str, list] = variables["files_to_download"]["gpkg_file"]
 # files_to_download: dict[str, list] = variables["files_to_download"]
 #file_to_download: str = files_to_download["gpkg_file"]
 
@@ -42,7 +42,7 @@ SOEB_DBNAME: Final = dsn_url.database
 # DAG definition
 with DAG(
     DAG_ID,
-    description="rioolnetwerk khalid test",
+    description="rioolnetwerk test van khalid",
     default_args=default_args,
     user_defined_filters={"quote": quote_string},
     template_searchpath=["/"],
