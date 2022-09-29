@@ -77,9 +77,9 @@ with DAG(
             "-t_srs EPSG:28992 -s_srs EPSG:28992 "
             "-lco GEOMETRY_NAME=geometry "
             "-lco SCHEMA=stg "
-            "-nln stg.wnt_rioolnetwerk_knoop "
-            "-nln stg.wnt_rioolnetwerk_leiding "
-            "-lco FID=id",
+            "-lco FID=id "
+            "-nln stg.wnt_rioolnetwerk_knoop 'AW Knoop' "
+            "-nln stg.wnt_rioolnetwerk_leiding 'AW Leiding'",
         )
 
 
