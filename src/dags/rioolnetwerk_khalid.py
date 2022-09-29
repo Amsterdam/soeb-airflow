@@ -76,7 +76,9 @@ with DAG(
             f"{DOWNLOAD_PATH_LOC} "
             "-t_srs EPSG:28992 -s_srs EPSG:28992 "
             "-lco GEOMETRY_NAME=geometry "
-            "-lco ACTIVE_SCHEMA=stg "
+            "-lco SCHEMA=stg "
+            "-nln 'stg.wnt_rioolnetwerk_knoop' Waternet_Assets_Levering.gpkg 'AW Knoop'"
+            "-nln 'stg.wnt_rioolnetwerk_leiding' Waternet_Assets_Levering.gpkg 'AW Leiding'"
             "-lco FID=id",
         )
 
