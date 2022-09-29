@@ -67,7 +67,7 @@ with DAG(
         )
 
 
-    # 4. Import data to local database
+    # 4. Import data to local database knoop
     import_data_local_db = BashOperator(
             task_id="import_data_into_local_db",
             bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
@@ -78,13 +78,27 @@ with DAG(
             "-lco GEOMETRY_NAME=geometry "
             "-lco SCHEMA=stg "
             "-lco FID=id "
-            "-nln stg.wnt_rioolnetwerk_knoop 'AW Knoop' "
+            "-nln stg.wnt_rioolnetwerk_knoop 'AW Knoop'",
+        )
+
+
+     # 5. Import data to local database leiding
+    import_data_local_db2 = BashOperator(
+            task_id="import_data_into_local_db",
+            bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
+            f"'PG:host={SOEB_HOST} dbname={SOEB_DBNAME} user={SOEB_USER} \
+                password={SOEB_PASSWD} port={SOEB_PORT} sslmode=require' "
+            f"{DOWNLOAD_PATH_LOC} "
+            "-t_srs EPSG:28992 -s_srs EPSG:28992 "
+            "-lco GEOMETRY_NAME=geometry "
+            "-lco SCHEMA=stg "
+            "-lco FID=id "
             "-nln stg.wnt_rioolnetwerk_leiding 'AW Leiding'",
         )
 
 
 # FLOW
-slack_at_start >> mkdir >> download_data >> import_data_local_db
+slack_at_start >> mkdir >> download_data >> import_data_local_db >> import_data_local_db2
 
 dag.doc_md = """
     #### DAG summary
