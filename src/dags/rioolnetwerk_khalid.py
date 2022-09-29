@@ -77,7 +77,7 @@ with DAG(
             "-t_srs EPSG:28992 -s_srs EPSG:28992 "
             "-lco GEOMETRY_NAME=geometry "
             "-lco FID=id"
-            "-lco ACTIVE_SCHEMA=stg",
+            "-lco SCHREMAS=stg",
         )
 
 
