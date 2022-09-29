@@ -84,7 +84,7 @@ with DAG(
 
      # 5. Import data to local database leiding
     import_data_local_db2 = BashOperator(
-            task_id="import_data_into_local_db",
+            task_id="import_data_into_local_db2",
             bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
             f"'PG:host={SOEB_HOST} dbname={SOEB_DBNAME} user={SOEB_USER} \
                 password={SOEB_PASSWD} port={SOEB_PORT} sslmode=require' "
