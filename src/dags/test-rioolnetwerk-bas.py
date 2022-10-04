@@ -18,7 +18,7 @@ from sqlalchemy_create_object_operator import SqlAlchemyCreateObjectOperator
 from swift_operator import SwiftOperator
 
 
-dag_id = "rioolnetwerk"
+dag_id = "rioolnetwerk_bas"
 tmp_dir: str = f"{SHARED_DIR}/{dag_id}"
 tmp_database_schema: str = define_temp_db_schema(dataset_name=dag_id)
 variables: dict = Variable.get(dag_id, deserialize_json=True)
