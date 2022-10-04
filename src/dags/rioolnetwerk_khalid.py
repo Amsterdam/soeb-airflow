@@ -30,7 +30,7 @@ DOWNLOAD_PATH_LOC: Final = f"{TMP_DIR}/{file_to_download}"
 # This secret must exists in KV: `airflow-connections-soeb-postgres`
 # with the connection string present with protocol `postgresql://`
 #SOEB_DB_CONN_STRING: Final = Connection.get_connection_from_secrets(conn_id ="soeb_postgres" )
-SOEB_DB_CONN_STRING: Final = Variable.get("soeb_postgres")
+SOEB_DB_CONN_STRING: Final = Variable.get("soeb_postgres_dev")
 dsn_url = make_url(SOEB_DB_CONN_STRING)
 SOEB_HOST: Final = dsn_url.host
 SOEB_PORT: Final = 5432
