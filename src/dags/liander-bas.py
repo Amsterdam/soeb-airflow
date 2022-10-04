@@ -1,27 +1,21 @@
-import requests
-import operator
-
-from functools import partial
+from pathlib import Path
 from typing import Final
+
 from airflow import DAG
 from airflow.models import Variable
-from airflow.operators.python import PythonOperator
-from airflow.providers.postgres.operators.postgres import PostgresOperator
-from common import SHARED_DIR, default_args, MessageOperator, quote_string
-from common.db import define_temp_db_schema, pg_params
-from contact_point.callbacks import get_contact_point_on_failure_callback
-from pathlib import Path
+from airflow.models import Connection
+from airflow.operators.bash import BashOperator
+from common import SHARED_DIR, MessageOperator, default_args, quote_string
 from common.path import mk_dir
-from more_ds.network.url import URL
-from ogr2ogr_operator import Ogr2OgrOperator
-from sqlalchemy_create_object_operator import SqlAlchemyCreateObjectOperator
+from contact_point.callbacks import get_contact_point_on_failure_callback
 from swift_operator import SwiftOperator
+from sqlalchemy.engine.url import make_url
 
 
 DAG_ID: Final = "liander_test"
 variables: dict[str,str] = Variable.get("liander", deserialize_json=True)
-file_to_download: dict[str, list] = variables["file_to_download"]["zip_file"]
-#file_to_download: str = file_to_download["zip_file"]
+#file_to_download: dict[str, list] = variables["file_to_download"]["zip_file"]
+file_to_download: str = ["file_to_download"]["zip_file"]
 
 # The temporary directory that will be used to store the downloaded file(s)
 TMP_DIR: Final = f"{SHARED_DIR}/{DAG_ID}"
