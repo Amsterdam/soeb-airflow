@@ -16,9 +16,12 @@ DAG_ID: Final = "liander_test"
 variables: dict[str,str] = Variable.get("liander", deserialize_json=True)
 #file_to_download: dict[str, list] = variables["file_to_download"]["zip_file"]
 file_to_download: str = ["file_to_download"]["zip_file"]
+zip_file: str = file_to_download["zip_file"]
 
 # The temporary directory that will be used to store the downloaded file(s)
 TMP_DIR: Final = f"{SHARED_DIR}/{DAG_ID}"
+
+
 
 # The name of the file to download
 DOWNLOAD_PATH_LOC: Final = f"{TMP_DIR}/{file_to_download}"
@@ -48,7 +51,7 @@ with DAG(
     # 1. Post info message on slack
     slack_at_start = MessageOperator(
         task_id="slack_at_start",
-    )
+        )
 
     # 2. Create temp directory to store files
     # NOTE kan ook met bashoperator:
@@ -63,9 +66,14 @@ with DAG(
             object_id=file_to_download, # verwijzing naar bovenstaande variable
             output_path=f"{DOWNLOAD_PATH_LOC}",
         )
-    # 3a. Uitpakken .zip file
+   
+    # 4. Extract zip file
+    extract_zip = BashOperator(
+        task_id="extract_zip",
+        bash_command=f"unzip -o {TMP_DIR}/{zip_file} -d {TMP_DIR}",
+        )
 
-    # 4. Import data to local database
+    # 5. Import data to local database
     import_data_local_db = BashOperator(
             task_id="import_data_into_local_db",
             bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
@@ -83,6 +91,7 @@ with DAG(
     slack_at_start
     >> make_temp_dir 
     >> download_data
+    >> extract_zip
     >> import_data_local_db
     )
 
