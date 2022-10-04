@@ -13,10 +13,12 @@ from sqlalchemy.engine.url import make_url
 
 
 DAG_ID: Final = "liander"
-variables: dict[str,str] = Variable.get(DAG_ID, deserialize_json=True)
+variables: dict[str,str] = Variable.get("liander_test", deserialize_json=True)
 #file_to_download: dict[str, list] = variables["file_to_download"]["zip_file"]
-file_to_download: str = ["file_to_download"]["zip_file"]
+file_to_download: str = variables["file_to_download"]
 zip_file: str = file_to_download["zip_file"]
+shp_file1: str = file_to_download["Gas_Hoog"]
+shp_file2: str = file_to_download ["Gas_Laag"]
 
 # The temporary directory that will be used to store the downloaded file(s)
 TMP_DIR: Final = f"{SHARED_DIR}/{DAG_ID}"
@@ -63,8 +65,8 @@ with DAG(
             task_id=f"download_{file_to_download}",
             swift_conn_id="OBJECTSTORE_DATARUIMTE", # let op hoofdletters en "-" naar "_": laatste 2 namen van key-vault-string gebruiken (airflow-connections-objectstore-datatuimte)
             container="ondergrond/liander 14-09-2021", # map op de objectstore
-            object_id=file_to_download, # verwijzing naar bovenstaande variable
-            output_path=f"{DOWNLOAD_PATH_LOC}",
+            object_id=zip_file, # verwijzing naar bovenstaande variable
+            output_path=f"{DOWNLOAD_PATH_LOC}/{zip_file}",
         )
    
     # 4. Extract zip file
@@ -73,19 +75,18 @@ with DAG(
         bash_command=f"unzip -o {TMP_DIR}/{zip_file} -d {TMP_DIR}",
         )
 
-    # 5. Import data to local database
+    # 5. (multiple) Import data to local database
     import_data_local_db = BashOperator(
             task_id="import_data_into_local_db",
             bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
             f"'PG:host={SOEB_HOST} dbname={SOEB_DBNAME} user={SOEB_USER} \
                 password={SOEB_PASSWD} port={SOEB_PORT} sslmode=require' "
-            f"{DOWNLOAD_PATH_LOC} "
+            f"{shp_file1} "
             "-t_srs EPSG:28992 -s_srs EPSG:28992 " 
             "-lco GEOMETRY_NAME=geometry "
             "-lco FID=id",
         ) 
-  
-
+    
 # FLOW.
     (
     slack_at_start
