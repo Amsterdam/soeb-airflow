@@ -13,8 +13,8 @@ from sqlalchemy.engine.url import make_url
 
 
 # Schema: https://schemas.data.amsterdam.nl/datasets/rioolnetwerk/dataset
-DAG_ID: Final = "rioolnetwerk-khalid"
-variables: dict[str, str] = Variable.get("rioolnetwerk-khalid", deserialize_json=True)
+DAG_ID: Final = "rioolnetwerk_khalid"
+variables: dict[str, str] = Variable.get("rioolnetwerk_khalid", deserialize_json=True)
 file_to_download: dict[str, list] = variables["files_to_download"]["gpkg_file"]
 # files_to_download: dict[str, list] = variables["files_to_download"]
 #file_to_download: str = files_to_download["gpkg_file"]
@@ -30,7 +30,7 @@ DOWNLOAD_PATH_LOC: Final = f"{TMP_DIR}/{file_to_download}"
 # This secret must exists in KV: `airflow-connections-soeb-postgres`
 # with the connection string present with protocol `postgresql://`
 #SOEB_DB_CONN_STRING: Final = Connection.get_connection_from_secrets(conn_id ="soeb_postgres" )
-SOEB_DB_CONN_STRING: Final = Variable.get("soeb_postgres")
+SOEB_DB_CONN_STRING: Final = Variable.get("soeb_postgres_dev")
 dsn_url = make_url(SOEB_DB_CONN_STRING)
 SOEB_HOST: Final = dsn_url.host
 SOEB_PORT: Final = 5432
@@ -67,7 +67,7 @@ with DAG(
         )
 
 
-    # 4. Import data to local database
+    # 4. Import data to local database knoop
     import_data_local_db = BashOperator(
             task_id="import_data_into_local_db",
             bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
@@ -76,12 +76,29 @@ with DAG(
             f"{DOWNLOAD_PATH_LOC} "
             "-t_srs EPSG:28992 -s_srs EPSG:28992 "
             "-lco GEOMETRY_NAME=geometry "
-            "-lco FID=id",
+            "-lco SCHEMA=stg "
+            "-lco FID=id "
+            "-nln stg.wnt_rioolnetwerk_knoop 'AW Knoop'",
+        )
+
+
+     # 5. Import data to local database leiding
+    import_data_local_db2 = BashOperator(
+            task_id="import_data_into_local_db2",
+            bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
+            f"'PG:host={SOEB_HOST} dbname={SOEB_DBNAME} user={SOEB_USER} \
+                password={SOEB_PASSWD} port={SOEB_PORT} sslmode=require' "
+            f"{DOWNLOAD_PATH_LOC} "
+            "-t_srs EPSG:28992 -s_srs EPSG:28992 "
+            "-lco GEOMETRY_NAME=geometry "
+            "-lco SCHEMA=stg "
+            "-lco FID=id "
+            "-nln stg.wnt_rioolnetwerk_leiding 'AW Leiding'",
         )
 
 
 # FLOW
-slack_at_start >> mkdir >> download_data >> import_data_local_db
+slack_at_start >> mkdir >> download_data >> import_data_local_db >> import_data_local_db2
 
 dag.doc_md = """
     #### DAG summary
