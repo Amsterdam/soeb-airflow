@@ -7,7 +7,7 @@ rioolnetwerk_khalid:
   files_to_download:
     gpkg_file: Waternet_Assets_Levering.gpkg
     txt_file: Disclaimer_uitleg_Z_bepaling.txt
-liander:
+liander_test:
   files_to_download:
     zip_file: Gas Leidingen.zip
     Gas_Hoog: Gas_Hoge_Druk.shp
