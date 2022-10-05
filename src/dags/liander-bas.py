@@ -44,7 +44,7 @@ SOEB_DBNAME: Final = dsn_url.database
 # DAG definition
 with DAG(
     DAG_ID,
-    description="liander test met .zip en .shp files!",
+    description="liander test met .zip en .shp files!", # zichtbaar als tooltip 
     default_args=default_args,
     user_defined_filters={"quote": quote_string},
     template_searchpath=["/"],
@@ -82,7 +82,7 @@ with DAG(
             bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
             f"'PG:host={SOEB_HOST} dbname={SOEB_DBNAME} user={SOEB_USER} \
             password={SOEB_PASSWD} port={SOEB_PORT} sslmode=require' "
-            f"{shp_file1} "
+            f"{TMP_DIR}{shp_file1} "
             "-a_srs EPSG:28992", #let op! transformatie flag
             #"-lco GEOMETRY_NAME=geometry ",
             #"-lco FID=id", # nog uitzoeken -lco
