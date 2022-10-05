@@ -13,9 +13,9 @@ from sqlalchemy.engine.url import make_url
 
 
 DAG_ID: Final = "liander_test"
-variables: dict[str,str] = Variable.get("liander_test", deserialize_json=True)
+variables: dict[str,str] = Variable.get("liander_test", deserialize_json=True)# zie vars.yml
 #file_to_download: dict[str, list] = variables["file_to_download"]["zip_file"]
-file_to_download: str = variables["file_to_download"]
+file_to_download: str = variables["files_to_download"]# zie vars.yml
 zip_file: str = file_to_download["zip_file"]
 shp_file1: str = file_to_download["Gas_Hoog"]
 shp_file2: str = file_to_download ["Gas_Laag"]
