@@ -16,9 +16,10 @@ DAG_ID: Final = "liander_test"
 variables: dict[str,str] = Variable.get("liander_test", deserialize_json=True)# zie vars.yml
 #file_to_download: dict[str, list] = variables["file_to_download"]["zip_file"]
 file_to_download: str = variables["files_to_download"]# zie vars.yml
+file_to_proces: str = variables["files_to_proces"]
 zip_file: str = file_to_download["zip_file"]
-shp_file1: str = file_to_download["Gas_Hoog"]# let op!: "spaties" in de zip_file niet toegestaan
-shp_file2: str = file_to_download ["Gas_Laag"]
+shp_file1: str = file_to_proces["Gas_Hoog"]# let op!: "spaties" in de zip_file niet toegestaan
+shp_file2: str = file_to_proces["Gas_Laag"]
 
 # The temporary directory that will be used to store the downloaded file(s)
 TMP_DIR: Final = f"{SHARED_DIR}/{DAG_ID}"
@@ -26,7 +27,7 @@ TMP_DIR: Final = f"{SHARED_DIR}/{DAG_ID}"
 
 
 # The name of the file to download
-DOWNLOAD_PATH_LOC: Final = f"{TMP_DIR}/{file_to_download}"
+DOWNLOAD_PATH_LOC: Final = f"{TMP_DIR}/{zip_file}"
 
 # The local database connection.
 # This secret must exists in KV: `airflow-connections-soeb-postgres`
@@ -62,17 +63,17 @@ with DAG(
 
     # 3. Download data met SwiftOperator (objectstore)
     download_data = SwiftOperator(
-            task_id=f"download_{file_to_download}",
+            task_id=f"download_{zip_file}",
             swift_conn_id="OBJECTSTORE_DATARUIMTE", # let op hoofdletters en "-" naar "_": laatste 2 namen van key-vault-string gebruiken (airflow-connections-objectstore-datatuimte)
             container="ondergrond/liander 14-09-2021", # map op de objectstore
             object_id=zip_file, # verwijzing naar bovenstaande variable
-            output_path=f"{DOWNLOAD_PATH_LOC}/{zip_file}",
+            output_path=f"{DOWNLOAD_PATH_LOC}",
         )
    
     # 4. Extract zip file
     extract_zip = BashOperator(
         task_id="extract_zip",
-        bash_command=f"unzip -o {TMP_DIR}/{zip_file} -d {TMP_DIR}",
+        bash_command=f"unzip -o {DOWNLOAD_PATH_LOC} -d {TMP_DIR}", #
         )
 
     # 5. (multiple) Import data to local database
