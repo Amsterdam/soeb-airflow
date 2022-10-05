@@ -44,7 +44,7 @@ SOEB_DBNAME: Final = dsn_url.database
 # DAG definition
 with DAG(
     DAG_ID,
-    description="liander test data",
+    description="liander test met .zip en .shp files!",
     default_args=default_args,
     user_defined_filters={"quote": quote_string},
     template_searchpath=["/"],
@@ -65,8 +65,8 @@ with DAG(
     download_data = SwiftOperator(
             task_id=f"download_{zip_file}",
             swift_conn_id="OBJECTSTORE_DATARUIMTE", # let op hoofdletters en "-" naar "_": laatste 2 namen van key-vault-string gebruiken (airflow-connections-objectstore-datatuimte)
-            container="ondergrond/liander 14-09-2021", # map op de objectstore
-            object_id=zip_file, # verwijzing naar bovenstaande variable
+            container="ondergrond", # map op de objectstore
+            object_id=f"liander 14-09-2021/{zip_file}", # verwijzing naar bovenstaande variable
             output_path=f"{DOWNLOAD_PATH_LOC}",
         )
    
