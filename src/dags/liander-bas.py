@@ -13,7 +13,7 @@ from sqlalchemy.engine.url import make_url
 
 
 DAG_ID: Final = "liander_test"
-variables: dict[str,str] = Variable.get("liander", deserialize_json=True)
+variables: dict[str,str] = Variable.get("liander_test", deserialize_json=True)
 #file_to_download: dict[str, list] = variables["file_to_download"]["zip_file"]
 file_to_download: str = variables["file_to_download"]
 zip_file: str = file_to_download["zip_file"]
