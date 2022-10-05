@@ -10,5 +10,6 @@ rioolnetwerk_khalid:
 liander_test:
   files_to_download:
     zip_file: Gas_Leidingen.zip
+  files_to_proces:
     Gas_Hoog: Gas_Hoge_Druk.shp
     Gas_Laag: Gas_Lage_Druk.shp
