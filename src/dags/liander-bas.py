@@ -83,9 +83,9 @@ with DAG(
             f"'PG:host={SOEB_HOST} dbname={SOEB_DBNAME} user={SOEB_USER} \
             password={SOEB_PASSWD} port={SOEB_PORT} sslmode=require' "
             f"{TMP_DIR}/{shp_file1} "
-            "-a_srs EPSG:28992", #let op! transformatie flag
-            #"-lco GEOMETRY_NAME=geometry ",
-            #"-lco FID=id", # nog uitzoeken -lco
+            "-a_srs EPSG:28992" #let op! transformatie flag
+            "-lco GEOMETRY_NAME=geometry "
+            "-lco FID=id", # nog uitzoeken -lco
         ) 
     
 # FLOW.
