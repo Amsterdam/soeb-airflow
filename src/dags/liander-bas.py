@@ -17,7 +17,7 @@ variables: dict[str,str] = Variable.get("liander_test", deserialize_json=True)# 
 #file_to_download: dict[str, list] = variables["file_to_download"]["zip_file"]
 file_to_download: str = variables["files_to_download"]# zie vars.yml
 zip_file: str = file_to_download["zip_file"]
-shp_file1: str = file_to_download["Gas_Hoog"]
+shp_file1: str = file_to_download["Gas_Hoog"]# let op!: "spaties" in de zip_file niet toegestaan
 shp_file2: str = file_to_download ["Gas_Laag"]
 
 # The temporary directory that will be used to store the downloaded file(s)

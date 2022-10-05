@@ -1,4 +1,4 @@
-# let op geen '-' in je variable naam gebruiken!
+# let op geen '-' in je variable naam gebruiken! En spaties niet toegestaan!
 rioolnetwerk:
   files_to_download:
     gpkg_file: Waternet_Assets_Levering.gpkg
@@ -9,6 +9,6 @@ rioolnetwerk_khalid:
     txt_file: Disclaimer_uitleg_Z_bepaling.txt
 liander_test:
   files_to_download:
-    zip_file: Gas Leidingen.zip
+    zip_file: Gas_Leidingen.zip
     Gas_Hoog: Gas_Hoge_Druk.shp
     Gas_Laag: Gas_Lage_Druk.shp
