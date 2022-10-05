@@ -81,11 +81,11 @@ with DAG(
             task_id="import_data_into_local_db",
             bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
             f"'PG:host={SOEB_HOST} dbname={SOEB_DBNAME} user={SOEB_USER} \
-                password={SOEB_PASSWD} port={SOEB_PORT} sslmode=require' "
+            password={SOEB_PASSWD} port={SOEB_PORT} sslmode=require' "
             f"{shp_file1} "
-            "-t_srs EPSG:28992 -s_srs EPSG:28992 " 
-            "-lco GEOMETRY_NAME=geometry "
-            "-lco FID=id",
+            "-a_srs EPSG:28992" #let op! transformatie flag
+            "-lco GEOMETRY_NAME=geometry ",
+            #"-lco FID=id", nog uitzoeken -lco
         ) 
     
 # FLOW.
