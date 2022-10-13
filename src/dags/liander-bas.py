@@ -4,6 +4,7 @@ from typing import Final
 from airflow import DAG
 from airflow.models import Variable
 from airflow.models import Connection
+from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.bash import BashOperator
 from common import SHARED_DIR, MessageOperator, default_args, quote_string
 from common.path import mk_dir
