@@ -83,7 +83,7 @@ with DAG(
 
     # 6. (multiple) Import data to local database
     # let op! blokhaken ivm for-loop
-    import_data_local_db = [ BashOperator
+    import_data_local_db = [BashOperator
         (
             task_id="import_data_into_local_db",
             bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
