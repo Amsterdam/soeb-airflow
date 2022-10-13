@@ -81,7 +81,7 @@ with DAG(
     Interface = DummyOperator(task_id="interface")
 
 
-    # 6. (multiple) Import data to local database
+    # 6. (batch) Import data to local database
     # let op! blokhaken ivm for-loop
     import_data_local_db = [
         BashOperator
@@ -95,7 +95,7 @@ with DAG(
             "-lco GEOMETRY_NAME=geometry "
             "-lco FID=id", # -lco : layer creation option
         ) 
-    for A in files_to_proces # 
+    for A in files_to_proces.items() # 
     ]
 # FLOW.
     (
