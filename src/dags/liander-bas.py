@@ -16,9 +16,8 @@ DAG_ID: Final = "liander_test"
 variables: dict[str,str] = Variable.get("liander_test", deserialize_json=True)# zie vars.yml
 #file_to_download: dict[str, list] = variables["file_to_download"]["zip_file"]
 file_to_download: str = variables["files_to_download"]# zie vars.yml
-file_to_proces: str = variables["files_to_proces"]
+files_to_proces: str = variables["files_to_proces"]
 zip_file: str = file_to_download["zip_file"]
-shp_files: dict[str, str] = file_to_proces["Gas_Hoog"]["Gas_Laag"]
 # shp_file1: str = file_to_proces["Gas_Hoog"]# let op!: "spaties" in de zip_file niet toegestaan
 # shp_file2: str = file_to_proces["Gas_Laag"]
 
@@ -81,7 +80,6 @@ with DAG(
     Interface = DummyOperator(task_id="interface")
 
 
-
     # 6. (multiple) Import data to local database
     # let op! blokhaken ivm for-loop
     import_data_local_db = [ BashOperator
@@ -90,12 +88,12 @@ with DAG(
             bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
             f"'PG:host={SOEB_HOST} dbname={SOEB_DBNAME} user={SOEB_USER} \
             password={SOEB_PASSWD} port={SOEB_PORT} sslmode=require' "
-            f"{TMP_DIR}/{shp_files} "
+            f"{TMP_DIR}/{A} "
             "-a_srs EPSG:28992" #let op! -a_srs : asign-flag
             "-lco GEOMETRY_NAME=geometry "
             "-lco FID=id", # -lco : layer creation option
         ) 
-    for TMP_DIR in shp_files.items() # 
+    for A in files_to_proces # 
     ]
 # FLOW.
     (
