@@ -18,7 +18,7 @@ variables: dict[str,str] = Variable.get("liander_test", deserialize_json=True)# 
 file_to_download: str = variables["files_to_download"]# zie vars.yml
 file_to_proces: str = variables["files_to_proces"]
 zip_file: str = file_to_download["zip_file"]
-shp_files: dict[str, list] = file_to_proces["Gas_Hoog"]["Gas_Laag"]
+shp_files: dict[str, str] = file_to_proces["Gas_Hoog"]["Gas_Laag"]
 # shp_file1: str = file_to_proces["Gas_Hoog"]# let op!: "spaties" in de zip_file niet toegestaan
 # shp_file2: str = file_to_proces["Gas_Laag"]
 
