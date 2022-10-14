@@ -95,7 +95,7 @@ with DAG(
             "-lco GEOMETRY_NAME=geometry "
             "-lco FID=id", # -lco : layer creation option
         ) 
-    for A in files_to_proces.values() # 
+    for A in files_to_proces # 
     ]
 # FLOW.
     (
