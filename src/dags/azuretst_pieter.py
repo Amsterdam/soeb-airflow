@@ -13,7 +13,7 @@ from sqlalchemy.engine.url import make_url
 
 
 # Schema: https://schemas.data.amsterdam.nl/datasets/rioolnetwerk/dataset
-DAG_ID: Final = "rioolnetwerk-pieter"
+DAG_ID: Final = "rioolnetwerk_pieter"
 variables: dict[str, str] = Variable.get("rioolnetwerk", deserialize_json=True)
 file_to_download: dict[str, list] = variables["files_to_download"]["gpkg_file"]
 # files_to_download: dict[str, list] = variables["files_to_download"]
