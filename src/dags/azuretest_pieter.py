@@ -47,3 +47,15 @@ with DAG(
     template_searchpath=["/"],
     on_failure_callback=get_contact_point_on_failure_callback(dataset_id=DAG_ID),
 ) as dag:
+
+    # 1. Post info message on slack
+    slack_at_start = MessageOperator(
+        task_id="slack_at_start",
+    )
+
+    # 2. Create temp directory to store files
+    mkdir = mk_dir(Path(TMP_DIR))
+
+
+# FLOW
+slack_at_start >> mkdir 
