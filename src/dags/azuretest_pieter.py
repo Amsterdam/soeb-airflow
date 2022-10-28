@@ -37,3 +37,13 @@ SOEB_PORT: Final = 5432
 SOEB_USER: Final = dsn_url.username
 SOEB_PASSWD: Final = dsn_url.password
 SOEB_DBNAME: Final = dsn_url.database
+
+# DAG definition
+with DAG(
+    DAG_ID,
+    description="rioolnetwerk_pieter",
+    default_args=default_args,
+    user_defined_filters={"quote": quote_string},
+    template_searchpath=["/"],
+    on_failure_callback=get_contact_point_on_failure_callback(dataset_id=DAG_ID),
+) as dag:
