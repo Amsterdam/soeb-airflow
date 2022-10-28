@@ -13,7 +13,7 @@ from sqlalchemy.engine.url import make_url
 
 
 # Schema: https://schemas.data.amsterdam.nl/datasets/rioolnetwerk/dataset
-DAG_ID: Final = "rioolnetwerk_Pieter"
+DAG_ID: Final = "rioolnetwerk_pieter"
 variables: dict[str, str] = Variable.get("rioolnetwerk", deserialize_json=True)
 file_to_download: dict[str, list] = variables["files_to_download"]["gpkg_file"]
 # files_to_download: dict[str, list] = variables["files_to_download"]
@@ -37,3 +37,44 @@ SOEB_PORT: Final = 5432
 SOEB_USER: Final = dsn_url.username
 SOEB_PASSWD: Final = dsn_url.password
 SOEB_DBNAME: Final = dsn_url.database
+
+# DAG definition
+with DAG(
+    DAG_ID,
+    description="rioolnetwerk_pieter",
+    default_args=default_args,
+    user_defined_filters={"quote": quote_string},
+    template_searchpath=["/"],
+    on_failure_callback=get_contact_point_on_failure_callback(dataset_id=DAG_ID),
+) as dag:
+
+    # 1. Post info message on slack
+    slack_at_start = MessageOperator(
+        task_id="slack_at_start",
+    )
+
+    # 2. Create temp directory to store files
+    mkdir = mk_dir(Path(TMP_DIR))
+
+
+# FLOW
+slack_at_start >> mkdir 
+
+dag.doc_md = """
+    #### DAG summary
+    This DAG contains ...
+    #### Mission Critical
+    Classified as 2 (beschikbaarheid [range: 1,2,3])
+    #### On Failure Actions
+    Fix issues and rerun dag on working days
+    #### Point of Contact
+    Inform the businessowner at [businessowner]@amsterdam.nl
+    #### Business Use Case / process / origin
+    Na
+    #### Prerequisites/Dependencies/Resourcing
+    https://api.data.amsterdam.nl/v1/docs/datasets/rioolnetwerk.html
+    https://api.data.amsterdam.nl/v1/docs/wfs-datasets/rioolnetwerk.html
+    Example geosearch:
+    https://api.data.amsterdam.nl/geosearch?datasets=rioolnetwerk/rioolknopen&x=106434&y=488995&radius=10
+    https://api.data.amsterdam.nl/geosearch?datasets=rioolnetwerk/rioolleidingen&x=106434&y=488995&radius=10
+"""
