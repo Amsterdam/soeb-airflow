@@ -14,13 +14,16 @@ from sqlalchemy.engine.url import make_url
 
 
 DAG_ID: Final = "liander_test"
-variables: dict[str,str] = Variable.get("liander_test", deserialize_json=True)# zie vars.yml
+#variables: dict[str,str] = Variable.get("liander_test", deserialize_json=True)# zie vars.yml
 #file_to_download: dict[str, list] = variables["file_to_download"]["zip_file"]
-file_to_download: str = variables["files_to_download"]# zie vars.yml
-files_to_proces: str = variables["files_to_proces"]
-zip_file: str = file_to_download["zip_file"]
+#file_to_download: str = variables["files_to_download"]# zie vars.yml
+#files_to_proces: str = variables["files_to_proces"]
+#zip_file: str = file_to_download["zip_file"]
 # shp_file1: str = file_to_proces["Gas_Hoog"]# let op!: "spaties" in de zip_file niet toegestaan
 # shp_file2: str = file_to_proces["Gas_Laag"]
+
+zip_file="Gas_Leidingen.zip"
+files_to_proces=["Gas_Hoge_Druk.shp","Gas_Lage_Druk.shp"]
 
 # The temporary directory that will be used to store the downloaded file(s)
 TMP_DIR: Final = f"{SHARED_DIR}/{DAG_ID}"
@@ -78,7 +81,7 @@ with DAG(
     # to another parallel tasks with different number of lanes
     #  (without this intermediar, Airflow will give an error)
     # wordt gebruikt in een for-loop tbv org2ogr met bashoperator
-    Interface = DummyOperator(task_id="interface")
+    DAGsplitter = DummyOperator(task_id="interface")
 
 
     # 6. (batch) Import data to local database
@@ -97,14 +100,16 @@ with DAG(
         ) 
     for A in files_to_proces # 
     ]
+
 # FLOW.
     (
     slack_at_start
     >> make_temp_dir 
     >> download_data
     >> extract_zip
-    >> Interface 
+    >> DAGsplitter 
     >> import_data_local_db
+    #for (ingest_data) in zip(import_data_local_db):
     )
 
 dag.doc_md = """
