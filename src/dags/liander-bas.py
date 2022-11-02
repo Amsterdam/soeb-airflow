@@ -1,3 +1,5 @@
+import re
+
 from pathlib import Path
 from typing import Final
 
@@ -77,6 +79,14 @@ with DAG(
         task_id="extract_zip",
         bash_command=f"unzip -o {DOWNLOAD_PATH_LOC} -d {TMP_DIR}", #
         )
+    # 4a check dir
+    check_dir = BashOperator(
+        task_id="check_dir",
+        bash_command=f"ls {TMP_DIR} -R"
+   
+        )
+
+
     # 5. Dummy operator acts as an interface between parallel tasks
     # to another parallel tasks with different number of lanes
     #  (without this intermediar, Airflow will give an error)
@@ -107,6 +117,7 @@ with DAG(
     >> make_temp_dir 
     >> download_data
     >> extract_zip
+    >> check_dir
     >> DAGsplitter 
     >> import_data_local_db
     #for (ingest_data) in zip(import_data_local_db):
