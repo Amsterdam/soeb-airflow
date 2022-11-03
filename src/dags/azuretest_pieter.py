@@ -10,8 +10,6 @@ from common.path import mk_dir
 from contact_point.callbacks import get_contact_point_on_failure_callback
 from swift_operator import SwiftOperator
 from sqlalchemy.engine.url import make_url
-import os
-import shutil
 
 DAG_ID: Final = "rioolnetwerk_pieter"
 creadirs: list = ['/tmp/work','/tmp/work/old','/tmp/work/new']
@@ -38,7 +36,6 @@ def print_context(ds=None, **kwargs):
     pprint(kwargs)
     print(ds)
     return 'Whatever you return gets printed in the logs'
-
 
 # DAG definition
 with DAG(
