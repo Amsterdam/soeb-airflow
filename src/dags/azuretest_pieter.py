@@ -35,7 +35,7 @@ with DAG(
     # 2. Create temp directories to store files
     make_temp_dirs = [
         BashOperator(
-            task_id=f"Make directory",
+            task_id=f"Make_directory",
             bash_command="mkdir -p {dirname}",
         )
     for dirname in createdirs
