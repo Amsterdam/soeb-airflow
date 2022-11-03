@@ -15,30 +15,7 @@ from swift_operator import SwiftOperator
 from sqlalchemy.engine.url import make_url
 
 DAG_ID: Final = "rioolnetwerk_pieter"
-creadirs: list = ['/tmp/work','/tmp/work/old','/tmp/work/new']
-
-
-def fcreadirs(dirnames: list):
-    for dir in dirnames:
-        # os.makedirs(dir, 0o666)
-        os.makedirs(dir)
-     
-def fremovedirs(dirname: str):
-    # shutil.rmtree(dir)
-    print(dirname)
-
-def fcreatefile(dirname: str, filename: str):
-    file=os.path.join(dirname, filename)
-    with open(file, 'w') as fileinst:
-        fileinst.write('Create a new text file!')
-        fileinst.close()
-    
-@task(task_id="print_the_context")
-def print_context(ds=None, **kwargs):
-    """Print the Airflow context and ds variable from the context."""
-    pprint(kwargs)
-    print(ds)
-    return 'Whatever you return gets printed in the logs'
+createdirs: list = ['/tmp/work','/tmp/work/old','/tmp/work/new']
 
 # DAG definition
 with DAG(
@@ -56,11 +33,20 @@ with DAG(
     )
 
     # 2. Create temp directories to store files
-    run_this = print_context()
+    make_temp_dirs = [
+        BashOperator(
+            task_id=f"Make dir {dirname}",
+            bash_command="mkdir -p {dirname}",
+        )
+    for dirname in createdirs
+    ]
 
 
 # FLOW
-slack_at_start >> run_this
+    (
+    slack_at_start
+    >> make_temp_dirs 
+    )
 
 dag.doc_md = """
     #### DAG summary
