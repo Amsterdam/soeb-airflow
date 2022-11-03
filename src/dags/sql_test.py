@@ -1,21 +1,13 @@
-import re
-
 from pathlib import Path
 from typing import Final
 
 from airflow import DAG
-from airflow.models import Variable
-from airflow.models import Connection
-from airflow.operators.dummy_operator import DummyOperator
-from airflow.operators.bash import BashOperator
-from common import SHARED_DIR, MessageOperator, default_args, quote_string
-from common.path import mk_dir
+from common import MessageOperator, default_args, quote_string
 from contact_point.callbacks import get_contact_point_on_failure_callback
-from swift_operator import SwiftOperator
-from sqlalchemy.engine.url import make_url
+from postgres_on_azure_operator import PostgresOnAzureOperator
 
-DAG_ID: Final = "rioolnetwerk_pieter"
-createdirs: list = ['/tmp/work','/tmp/work/old','/tmp/work/new']
+# Schema: https://schemas.data.amsterdam.nl/datasets/rioolnetwerk/dataset
+DAG_ID: Final = "sql_test"
 
 # DAG definition
 with DAG(
@@ -32,21 +24,17 @@ with DAG(
         task_id="slack_at_start",
     )
 
-    # 2. Create temp directories to store files
-    make_temp_dirs = [
-        BashOperator(
-            task_id=f"Make_directory",
-            bash_command="mkdir -p {dirname}",
-        )
-    for dirname in createdirs
-    ]
-
+    # 2. Execute SQL
+    sql_task = PostgresOnAzureOperator(
+        postgres_conn_id="soeb_postgres",
+        task_id="set_datatype_date",
+        sql="""
+            SELECT 1 FROM spatial_ref_sys;
+        """
+    )
 
 # FLOW
-    (
-    slack_at_start
-    >> make_temp_dirs 
-    )
+slack_at_start >> sql_task 
 
 dag.doc_md = """
     #### DAG summary
