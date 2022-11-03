@@ -103,10 +103,10 @@ with DAG(
             bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
             f"'PG:host={SOEB_HOST} dbname={SOEB_DBNAME} user={SOEB_USER} \
             password={SOEB_PASSWD} port={SOEB_PORT} sslmode=require' "
-            f"{TMP_DIR}/{A}" # spatie wel/niet meenemen
-            "-a_srs EPSG:28992" #let op! -a_srs : asign-flag
+            f"{TMP_DIR}/{A} " # let op! spaties
+            "-a_srs EPSG:28992 " #let op! -a_srs : asign-flag
             "-lco GEOMETRY_NAME=geometry "
-            "-lco FID=id", # -lco : layer creation option
+            "-lco FID=id ", # -lco : layer creation option
         ) 
     for A in files_to_proces # 
     ]
