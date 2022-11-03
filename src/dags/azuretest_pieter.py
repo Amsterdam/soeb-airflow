@@ -10,33 +10,35 @@ from common.path import mk_dir
 from contact_point.callbacks import get_contact_point_on_failure_callback
 from swift_operator import SwiftOperator
 from sqlalchemy.engine.url import make_url
+import os
+import shutil
 
-
-# Schema: https://schemas.data.amsterdam.nl/datasets/rioolnetwerk/dataset
 DAG_ID: Final = "rioolnetwerk_pieter"
-variables: dict[str, str] = Variable.get("rioolnetwerk", deserialize_json=True)
-file_to_download: dict[str, list] = variables["files_to_download"]["gpkg_file"]
-# files_to_download: dict[str, list] = variables["files_to_download"]
-#file_to_download: str = files_to_download["gpkg_file"]
+creadirs: list = ['/tmp/work','/tmp/work/old','/tmp/work/new']
 
-# The temporary directory that will be used to store the downloaded file(s)
-# to in the pod.
-TMP_DIR: Final = f"{SHARED_DIR}/{DAG_ID}"
 
-# The name of the file to download
-DOWNLOAD_PATH_LOC: Final = f"{TMP_DIR}/{file_to_download}"
+def fcreadirs(dirnames: list):
+    for dir in dirnames:
+        # os.makedirs(dir, 0o666)
+        os.makedirs(dir)
+     
+def fremovedirs(dirname: str):
+    # shutil.rmtree(dir)
+    print(dirname)
 
-# The local database connection.
-# This secret must exists in KV: `airflow-connections-soeb-postgres`
-# with the connection string present with protocol `postgresql://`
-#SOEB_DB_CONN_STRING: Final = Connection.get_connection_from_secrets(conn_id ="soeb_postgres" )
-SOEB_DB_CONN_STRING: Final = Variable.get("soeb_postgres")
-dsn_url = make_url(SOEB_DB_CONN_STRING)
-SOEB_HOST: Final = dsn_url.host
-SOEB_PORT: Final = 5432
-SOEB_USER: Final = dsn_url.username
-SOEB_PASSWD: Final = dsn_url.password
-SOEB_DBNAME: Final = dsn_url.database
+def fcreatefile(dirname: str, filename: str):
+    file=os.path.join(dirname, filename)
+    with open(file, 'w') as fileinst:
+        fileinst.write('Create a new text file!')
+        fileinst.close()
+    
+@task(task_id="print_the_context")
+def print_context(ds=None, **kwargs):
+    """Print the Airflow context and ds variable from the context."""
+    pprint(kwargs)
+    print(ds)
+    return 'Whatever you return gets printed in the logs'
+
 
 # DAG definition
 with DAG(
@@ -53,12 +55,12 @@ with DAG(
         task_id="slack_at_start",
     )
 
-    # 2. Create temp directory to store files
-    mkdir = mk_dir(Path(TMP_DIR))
+    # 2. Create temp directories to store files
+    run_this = print_context()
 
 
 # FLOW
-slack_at_start >> mkdir 
+slack_at_start >> run_this
 
 dag.doc_md = """
     #### DAG summary
