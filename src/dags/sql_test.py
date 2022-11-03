@@ -6,10 +6,6 @@ from common import MessageOperator, default_args, quote_string
 from contact_point.callbacks import get_contact_point_on_failure_callback
 from postgres_on_azure_operator import PostgresOnAzureOperator
 
-# testsql == de Python file. 
-# BASIC_SQL == een functie in deze file
-from testsql import BASIC_SQL
-
 # Schema: https://schemas.data.amsterdam.nl/datasets/rioolnetwerk/dataset
 DAG_ID: Final = "sql_test"
 
@@ -32,7 +28,9 @@ with DAG(
     sql_task = PostgresOnAzureOperator(
         postgres_conn_id="soeb_postgres",
         task_id="set_datatype_date",
-        sql=BASIC_SQL
+        sql="""
+            SELECT 1 FROM spatial_ref_sys;
+        """
     )
 
 # FLOW
