@@ -15,7 +15,7 @@ from swift_operator import SwiftOperator
 from sqlalchemy.engine.url import make_url
 
 DAG_ID: Final = "rioolnetwerk_pieter"
-createdirs: list = ['/tmp/work','/tmp/work/old','/tmp/work/new']
+creadirs: dict= {1: '/tmp/work',2: '/tmp/work/old',3: '/tmp/work/new'}
 
 # DAG definition
 with DAG(
@@ -35,10 +35,10 @@ with DAG(
     # 2. Create temp directories to store files
     make_temp_dirs = [
         BashOperator(
-            task_id=f"Make_directory",
-            bash_command="mkdir -p {dirname}",
+            task_id=f"Make_directory_{dirno}",
+            bash_command=f"mkdir -p {creadirs[dirno]}",
         )
-    for dirname in createdirs
+    for dirno in range(1,4)
     ]
 
 
