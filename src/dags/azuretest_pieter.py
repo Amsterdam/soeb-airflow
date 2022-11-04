@@ -78,11 +78,11 @@ with DAG(
         swift_conn_id="OBJECTSTORE_LOCATIE",
         action_type="delete",
         container=f"{oskdrvfilelocation}",
-        object_id=f"{weeksdict.get(0)}",
-    )   
-      
+        objects_to_del=f"{weeksdict.get(0)}",
+    )
+
     # delete old files from objectsore
- 
+
     # remove directorues
 
 # FLOW
