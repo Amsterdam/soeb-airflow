@@ -61,7 +61,7 @@ with DAG(
         swift_conn_id="OBJECTSTORE_WATERNET",
         container=f"{osfilelocation}",
         object_id=f"{osfilewaternet}",
-        output_path=f"{creadirs[3]}",
+        output_path=f"{creadirs.get(3)}",
     )
 
     # Zip new waternet file
@@ -75,16 +75,11 @@ with DAG(
     # put kdrive objectstore
     # remove directorues
 
-
-
-
-
 # FLOW
     (
     slack_at_start
     >> make_temp_dirs
     >> download_waternetfile
-    >> zip_new_waternetfile
     )
 
 dag.doc_md = """
