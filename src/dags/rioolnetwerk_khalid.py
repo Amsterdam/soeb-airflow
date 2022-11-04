@@ -106,10 +106,10 @@ with DAG(
             f"'PG:host={SOEB_HOST} dbname={SOEB_DBNAME} user={SOEB_USER} \
                 password={SOEB_PASSWD} port={SOEB_PORT} sslmode=require' "
             "-lco SCHEMA=stg "
-            "-sql ' CREATE TABLE IF NOT EXISTS \
+            "-sql  CREATE TABLE IF NOT EXISTS \
                     rioolnetwerk_new ( id   SERIAL PRIMARY KEY, \
                     cs_external_id      VARCHAR NOT NULL UNIQUE, \
-                    wkb_geometry        geometry(Geometry,28992),  charging_cap_max    real ); '",
+                    wkb_geometry        geometry(Geometry,28992),  charging_cap_max    real ); ",
         )    
 
 
