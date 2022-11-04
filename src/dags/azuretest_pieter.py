@@ -61,7 +61,7 @@ with DAG(
         swift_conn_id="OBJECTSTORE_WATERNET",
         container=f"{osfilelocation}",
         object_id=f"{osfilewaternet}",
-        output_path=f"{creadirs.get(3)}",
+        output_path=f"{creadirs.get(3)}/{osfilewaternet}",
     )
 
     # Zip new waternet file
