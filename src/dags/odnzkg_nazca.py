@@ -1,6 +1,7 @@
+import requests
+
 from pathlib import Path
 from typing import Final
-
 from airflow import DAG
 from airflow.models import Variable
 from airflow.models import Connection
@@ -12,23 +13,30 @@ from swift_operator import SwiftOperator
 from sqlalchemy.engine.url import make_url
 
 
-# Schema: https://schemas.data.amsterdam.nl/datasets/rioolnetwerk/dataset
-DAG_ID: Final = "rioolnetwerk_khalid2"
-#variables: dict[str, str] = Variable.get("rioolnetwerk_khalid", deserialize_json=True)
-#file_to_download: dict[str, list] = variables["files_to_download"]["gpkg_file"]
-# files_to_download: dict[str, list] = variables["files_to_download"]
-#file_to_download: str = files_to_download["gpkg_file"]
 
+DAG_ID: Final = "odnzkg_nazca"
 
-gpkg_file= "Waternet_Assets_Levering.gpkg"
-txt_file= "Disclaimer_uitleg_Z_bepaling.txt"
+wfs = "https://odnzkgbodemdata.nazca4u.nl/geoserver/wfs?service=WFS&version=2.0.0"
 
+#variables: dict= Variable.get(dag_id, deserialize_json=True)
+#data_endpoint: dict = variables["data_endpoints"]["wfs"]
 # The temporary directory that will be used to store the downloaded file(s)
 # to in the pod.
 TMP_DIR: Final = f"{SHARED_DIR}/{DAG_ID}"
+data_file: str = f"{TMP_DIR}/{DAG_ID}"
+#password: str = env("AIRFLOW_CONN_WIOR_PASSWD")
+#user: str = env("AIRFLOW_CONN_WIOR_USER")
+base_url = "https://odnzkgbodemdata.nazca4u.nl/geoserver/wfs"
+data_endpoint = "?service=WFS&version=2.0.0"
+#wfs = "https://odnzkgbodemdata.nazca4u.nl/geoserver/wfs?service=WFS&version=2.0.0"
+#total_checks: list = []
+#count_checks: list = []
+#geo_checks: list = []
+#to_zone: Optional[tzinfo] = tz.gettz("Europe/Amsterdam")
 
-# The name of the file to download
-DOWNLOAD_PATH_LOC: Final = f"{TMP_DIR}/{gpkg_file}"
+    # The name of the file to download
+DOWNLOAD_PATH_LOC: Final = f"{TMP_DIR}/{wfs}"
+
 
 # The local database connection.
 # This secret must exists in KV: `airflow-connections-soeb-postgres`
@@ -43,10 +51,31 @@ SOEB_PASSWD: Final = dsn_url.password
 SOEB_DBNAME: Final = dsn_url.database
 
 
+
+def get_data() -> None:
+    """Calling the data endpoint."""
+    data_url = base_url / data_endpoint  # type: ignore
+    data_request = requests.get(data_url)
+    # store data
+'''    if data_request.status_code == 200:
+        try:
+            data = data_request.json()
+        except json.decoder.JSONDecodeError as jde:
+            logger.exception("Failed to convert request output to json for url %s", data_url)
+            raise json.decoder.JSONDecodeError from jde
+        with open(data_file, "w") as file:
+            file.write(json.dumps(data))
+    else:
+        logger.exception("Failed to call %s", data_url)
+        raise DataSourceError(f"HTTP status code: {data_request.status_code}")
+'''
+
+
+
 # DAG definition
 with DAG(
     DAG_ID,
-    description="rioolnetwerk2 test van khalid",
+    description="nazca boorpunten",
     default_args=default_args,
     user_defined_filters={"quote": quote_string},
     template_searchpath=["/"],
@@ -59,50 +88,20 @@ with DAG(
     )
 
     # 2. Create temp directory to store files
-    mkdir = mk_dir(Path(TMP_DIR))
+    mkdir = mk_dir(Path(TMP_DIR)
+    )
 
     # 3. Download data
     download_data = SwiftOperator(
-            task_id=f"download_{gpkg_file}",
-            swift_conn_id="OBJECTSTORE_WATERNET",
-            container="production",
-            object_id=gpkg_file,
+            task_id=f"download_{get_data}",
+            #swift_conn_id="OBJECTSTORE_WATERNET",
+            #container="production",
+            object_id=get_data,
             output_path=f"{DOWNLOAD_PATH_LOC}",
         )
 
-
-    # 4. Import data to local database knoop
-    import_data_local_db = BashOperator(
-            task_id="import_data_into_local_db",
-            bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
-            f"'PG:host={SOEB_HOST} dbname={SOEB_DBNAME} user={SOEB_USER} \
-                password={SOEB_PASSWD} port={SOEB_PORT} sslmode=require' "
-            f"{DOWNLOAD_PATH_LOC} "
-            "-t_srs EPSG:28992 -s_srs EPSG:28992 "
-            "-lco GEOMETRY_NAME=geometry "
-            "-lco SCHEMA=stg "
-            "-lco FID=id "
-            "-nln stg.wnt_rioolnetwerk_knoop 'AW Knoop'",
-        )
-
-
-     # 5. Import data to local database leiding
-    import_data_local_db2 = BashOperator(
-            task_id="import_data_into_local_db2",
-            bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
-            f"'PG:host={SOEB_HOST} dbname={SOEB_DBNAME} user={SOEB_USER} \
-                password={SOEB_PASSWD} port={SOEB_PORT} sslmode=require' "
-            f"{DOWNLOAD_PATH_LOC} "
-            "-t_srs EPSG:28992 -s_srs EPSG:28992 "
-            "-lco GEOMETRY_NAME=geometry "
-            "-lco SCHEMA=stg "
-            "-lco FID=id "
-            "-nln stg.wnt_rioolnetwerk_leiding 'AW Leiding'",
-        )
-
-
 # FLOW
-slack_at_start >> mkdir >> download_data >> import_data_local_db >> import_data_local_db2
+slack_at_start >> mkdir >> download_data
 
 dag.doc_md = """
     #### DAG summary
