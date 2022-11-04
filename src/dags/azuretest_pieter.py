@@ -57,7 +57,7 @@ with DAG(
 
     # Download waternet file from objectstore to work old
     download_waternetfile = SwiftOperator(
-        task_id=f"download_{osfilewaternet=}",
+        task_id=f"download_new_waternet_assets_levering",
         swift_conn_id="OBJECTSTORE_WATERNET",
         container=f"{osfilelocation}",
         object_id=f"{osfilewaternet}",
