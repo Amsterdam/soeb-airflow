@@ -15,7 +15,7 @@ from contact_point.callbacks import get_contact_point_on_failure_callback
 from swift_operator import SwiftOperator
 from sqlalchemy.engine.url import make_url
 
-from datetime import date
+import datetime
 
 # Define variables
 DAG_ID: Final = "rioolnetwerk_pieter"
