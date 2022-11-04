@@ -49,7 +49,7 @@ with DAG(
     description="rioolnetwerk test van khalid",
     default_args=default_args,
     user_defined_filters={"quote": quote_string},
-    template_searchpath=["/"],
+    template_searchpath=["/sql"],
     on_failure_callback=get_contact_point_on_failure_callback(dataset_id=DAG_ID),
 ) as dag:
 
@@ -99,23 +99,38 @@ with DAG(
             "-lco FID=id "
             "-nln stg.wnt_rioolnetwerk_leiding 'AW Leiding'",
         )
-"""     # 7. Use sql file/query
+     # 7. Use sql query
     use_sql = BashOperator(
             task_id="use_sql",
             bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
             f"'PG:host={SOEB_HOST} dbname={SOEB_DBNAME} user={SOEB_USER} \
                 password={SOEB_PASSWD} port={SOEB_PORT} sslmode=require' "
-            f"{DOWNLOAD_PATH_LOC} "
-            "-t_srs EPSG:28992 -s_srs EPSG:28992 "
-            "-lco GEOMETRY_NAME=geometry "
             "-lco SCHEMA=stg "
-            "-lco FID=id "
-            "-nln stg.wnt_rioolnetwerk_leiding 'AW Leiding'",
+            "-sql "DROP TABLE IF EXISTS rioolnetwerk_new CASCADE;
+                   CREATE TABLE IF NOT EXISTS rioolnetwerk_new
+                   (
+                     id                  SERIAL PRIMARY KEY,
+                     cs_external_id      character varying(64) NOT NULL UNIQUE,
+                     wkb_geometry        geometry(Geometry,28992),
+                     street              character varying(150),
+                     housenumber         character varying(6),
+                     housnumberext       character varying(6),
+                     postalcode          character varying(6),
+                     district            character varying(40),
+                     countryiso          character varying(3),
+                     region              character varying(40),
+                     city                character varying(40),
+                     last_update         timestamp with time zone default current_timestamp,
+                     last_status_update  timestamp with time zone default current_timestamp,
+                     charging_cap_max    real
+                   );
+
+                   CREATE INDEX ON rioolnetwerk_new USING gist (wkb_geometry);"",
         )    
 
-"""
+
 # FLOW
-slack_at_start >> mkdir >> download_data >> import_data_local_db >> import_data_local_db2 #>> use_sql
+slack_at_start >> mkdir >> download_data >> import_data_local_db >> import_data_local_db2 >> use_sql
 
 dag.doc_md = """
     #### DAG summary
