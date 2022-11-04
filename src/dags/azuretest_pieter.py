@@ -1,5 +1,6 @@
 import re
 
+
 from pathlib import Path
 from typing import Final
 
@@ -14,8 +15,21 @@ from contact_point.callbacks import get_contact_point_on_failure_callback
 from swift_operator import SwiftOperator
 from sqlalchemy.engine.url import make_url
 
+from datetime import date
+
+# Define variables
 DAG_ID: Final = "rioolnetwerk_pieter"
-creadirs: dict= {1: '/tmp/work',2: '/tmp/work/old',3: '/tmp/work/new'}
+creadirs: dict = {1: '/tmp/work',2: '/tmp/work/old',3: '/tmp/work/new'}
+osfilelocation = 'production'
+osfilewaternet = 'Waternet_Assets_Levering.gpkg'
+today = datetime.datetime.now()
+weekrange = [0,5,6,7,8]
+weeksdict: dict = {}
+for weekno in weekrange:
+   wtoday = (today - datetime.timedelta(weeks=weekno)).strftime("%V")
+   ytoday = (today - datetime.timedelta(weeks=weekno)).year
+   weekfile = 'Waternet_Assets_Levering_'+ str(ytoday) + '_week' + str(wtoday) + '.zip'
+   weeksdict[weekno] = weekfile
 
 # DAG definition
 with DAG(
@@ -36,16 +50,41 @@ with DAG(
     make_temp_dirs = [
         BashOperator(
             task_id=f"Make_directory_{dirno}",
-            bash_command=f"mkdir -p {creadirs[dirno]}",
+            bash_command=f"mkdir -p {creadirs.get(dirno)}",
         )
     for dirno in range(1,4)
     ]
+
+    # Download waternet file from objectstore to work old
+    download_waternetfile = SwiftOperator(
+        task_id=f"download_{osfilewaternet=}",
+        swift_conn_id="OBJECTSTORE_WATERNET",
+        container=f"{osfilelocation}",
+        object_id=f"{osfilewaternet}",
+        output_path=f"{creadirs[3]}",
+    )
+
+    # Zip new waternet file
+    zip_new_waternetfile = BashOperator(
+        task_id=f"zip_{weeksdict.get(0)}",
+        bash_command=f"zip -q {creadirs.get(3)}/{weeksdict.get(0)} {creadirs.get(3)}/{osfilewaternet}" 
+    )
+    
+    # Delete new kdrive object store
+    # delete old files from objectsore
+    # put kdrive objectstore
+    # remove directorues
+
+
+
 
 
 # FLOW
     (
     slack_at_start
-    >> make_temp_dirs 
+    >> make_temp_dirs
+    >> download_waternetfile
+    >> zip_new_waternetfile
     )
 
 dag.doc_md = """
