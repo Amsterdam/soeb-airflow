@@ -1,3 +1,5 @@
+import re
+
 from pathlib import Path
 from typing import Final
 
@@ -14,13 +16,16 @@ from sqlalchemy.engine.url import make_url
 
 
 DAG_ID: Final = "liander_test"
-variables: dict[str,str] = Variable.get("liander_test", deserialize_json=True)# zie vars.yml
+#variables: dict[str,str] = Variable.get("liander_test", deserialize_json=True)# zie vars.yml
 #file_to_download: dict[str, list] = variables["file_to_download"]["zip_file"]
-file_to_download: str = variables["files_to_download"]# zie vars.yml
-files_to_proces: str = variables["files_to_proces"]
-zip_file: str = file_to_download["zip_file"]
+#file_to_download: str = variables["files_to_download"]# zie vars.yml
+#files_to_proces: str = variables["files_to_proces"]
+#zip_file: str = file_to_download["zip_file"]
 # shp_file1: str = file_to_proces["Gas_Hoog"]# let op!: "spaties" in de zip_file niet toegestaan
 # shp_file2: str = file_to_proces["Gas_Laag"]
+
+zip_file="Gas_Leidingen.zip"
+files_to_proces=["Gas_Hoge_Druk.shp","Gas_Lage_Druk.shp"]
 
 # The temporary directory that will be used to store the downloaded file(s)
 TMP_DIR: Final = f"{SHARED_DIR}/{DAG_ID}"
@@ -74,11 +79,19 @@ with DAG(
         task_id="extract_zip",
         bash_command=f"unzip -o {DOWNLOAD_PATH_LOC} -d {TMP_DIR}", #
         )
+    # 4a check dir
+    check_dir = BashOperator(
+        task_id="check_dir",
+        bash_command=f"ls {TMP_DIR} -R"
+   
+        )
+
+
     # 5. Dummy operator acts as an interface between parallel tasks
     # to another parallel tasks with different number of lanes
     #  (without this intermediar, Airflow will give an error)
     # wordt gebruikt in een for-loop tbv org2ogr met bashoperator
-    Interface = DummyOperator(task_id="interface")
+    DAGsplitter = DummyOperator(task_id="interface")
 
 
     # 6. (batch) Import data to local database
@@ -90,21 +103,24 @@ with DAG(
             bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
             f"'PG:host={SOEB_HOST} dbname={SOEB_DBNAME} user={SOEB_USER} \
             password={SOEB_PASSWD} port={SOEB_PORT} sslmode=require' "
-            f"{TMP_DIR}/{A} "
-            "-a_srs EPSG:28992" #let op! -a_srs : asign-flag
+            f"{TMP_DIR}/{A} " # let op! spaties
+            "-a_srs EPSG:28992 " #let op! -a_srs : asign-flag
             "-lco GEOMETRY_NAME=geometry "
-            "-lco FID=id", # -lco : layer creation option
+            "-lco FID=id ", # -lco : layer creation option
         ) 
     for A in files_to_proces # 
     ]
+
 # FLOW.
     (
     slack_at_start
     >> make_temp_dir 
     >> download_data
     >> extract_zip
-    >> Interface 
+    >> check_dir
+    >> DAGsplitter 
     >> import_data_local_db
+    #for (ingest_data) in zip(import_data_local_db):
     )
 
 dag.doc_md = """
