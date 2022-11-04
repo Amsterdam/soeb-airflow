@@ -12,7 +12,7 @@ DAG_ID: Final = "sql_test"
 # DAG definition
 with DAG(
     DAG_ID,
-    description="rioolnetwerk_pieter",
+    description="sql_test",
     default_args=default_args,
     user_defined_filters={"quote": quote_string},
     template_searchpath=["/"],
