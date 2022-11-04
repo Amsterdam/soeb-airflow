@@ -14,17 +14,21 @@ from sqlalchemy.engine.url import make_url
 
 # Schema: https://schemas.data.amsterdam.nl/datasets/rioolnetwerk/dataset
 DAG_ID: Final = "rioolnetwerk_khalid"
-variables: dict[str, str] = Variable.get("rioolnetwerk_khalid", deserialize_json=True)
-file_to_download: dict[str, list] = variables["files_to_download"]["gpkg_file"]
+#variables: dict[str, str] = Variable.get("rioolnetwerk_khalid", deserialize_json=True)
+#file_to_download: dict[str, list] = variables["files_to_download"]["gpkg_file"]
 # files_to_download: dict[str, list] = variables["files_to_download"]
 #file_to_download: str = files_to_download["gpkg_file"]
+
+
+gpkg_file= "Waternet_Assets_Levering.gpkg"
+txt_file= "Disclaimer_uitleg_Z_bepaling.txt"
 
 # The temporary directory that will be used to store the downloaded file(s)
 # to in the pod.
 TMP_DIR: Final = f"{SHARED_DIR}/{DAG_ID}"
 
 # The name of the file to download
-DOWNLOAD_PATH_LOC: Final = f"{TMP_DIR}/{file_to_download}"
+DOWNLOAD_PATH_LOC: Final = f"{TMP_DIR}/{gpkg_file}"
 
 # The local database connection.
 # This secret must exists in KV: `airflow-connections-soeb-postgres`
@@ -59,10 +63,10 @@ with DAG(
 
     # 3. Download data
     download_data = SwiftOperator(
-            task_id=f"download_{file_to_download}",
+            task_id=f"download_{gpkg_file}",
             swift_conn_id="OBJECTSTORE_WATERNET",
             container="production",
-            object_id=file_to_download,
+            object_id=gpkg_file,
             output_path=f"{DOWNLOAD_PATH_LOC}",
         )
 
@@ -95,10 +99,23 @@ with DAG(
             "-lco FID=id "
             "-nln stg.wnt_rioolnetwerk_leiding 'AW Leiding'",
         )
+"""     # 7. Use sql file/query
+    use_sql = BashOperator(
+            task_id="use_sql",
+            bash_command="ogr2ogr -overwrite -f 'PostgreSQL' "
+            f"'PG:host={SOEB_HOST} dbname={SOEB_DBNAME} user={SOEB_USER} \
+                password={SOEB_PASSWD} port={SOEB_PORT} sslmode=require' "
+            f"{DOWNLOAD_PATH_LOC} "
+            "-t_srs EPSG:28992 -s_srs EPSG:28992 "
+            "-lco GEOMETRY_NAME=geometry "
+            "-lco SCHEMA=stg "
+            "-lco FID=id "
+            "-nln stg.wnt_rioolnetwerk_leiding 'AW Leiding'",
+        )    
 
-
+"""
 # FLOW
-slack_at_start >> mkdir >> download_data >> import_data_local_db >> import_data_local_db2
+slack_at_start >> mkdir >> download_data >> import_data_local_db >> import_data_local_db2 #>> use_sql
 
 dag.doc_md = """
     #### DAG summary
