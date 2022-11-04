@@ -77,8 +77,10 @@ with DAG(
         task_id=f"delete_from_kdrive_os_{weeksdict.get(0)}",
         swift_conn_id="OBJECTSTORE_LOCATIE",
         action_type="delete",
-        container=f"{oskdrvfilelocation}",
-        objects_to_del=f"{weeksdict.get(0)}",
+        # container=f"{oskdrvfilelocation}",
+        # objects_to_del=f"{weeksdict.get(0)}",
+        container="geopackages",
+        objects_to_del="Waternet_Assets_Levering_2022_week44.zip",
     )
 
     # delete old files from objectsore
