@@ -80,16 +80,7 @@ with DAG(
         container=f"{oskdrvfilelocation}",
         object_id=f"{weeksdict.get(0)}",
     )   
-    
-    # Upload kdrive objectstore
-    upload_new_waternetfile = SwiftOperator(
-        task_id=f"upload_to_kdrive_os_{weeksdict.get(0)}",
-        swift_conn_id="OBJECTSTORE_LOCATIE",
-        action_type="upload",
-        container=f"{oskdrvfilelocation}",
-        object_id=f"{weeksdict.get(0)}",
-        output_path=f"{creadirs.get(3)}/{weeksdict.get(0)}",
-    )   
+      
     # delete old files from objectsore
  
     # remove directorues
