@@ -75,11 +75,12 @@ with DAG(
     # Delete new kdrive object store
     delete_new_waternetfile = SwiftOperator(
         task_id=f"delete_from_kdrive_os_{weeksdict.get(0)}",
-        swift_conn_id="OBJECTSTORE_LOCATIE",
+        swift_conn_id="OBJECTSTORE_WATERNET",
         action_type="delete",
         # container=f"{oskdrvfilelocation}",
         # objects_to_del=f"{weeksdict.get(0)}",
-        container="geopackages",
+        # container="geopackages",
+        container="production",
         objects_to_del="Waternet_Assets_Levering_2022_week44.zip",
     )
 
