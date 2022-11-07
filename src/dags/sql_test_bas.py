@@ -28,7 +28,7 @@ with DAG(
     # 2. Execute SQL
     sql_task = PostgresOnAzureOperator(
         postgres_conn_id="soeb_postgres",
-        task_id="calc length from geometry",
+        task_id="calc_length_from_geometry",
         sql="""
         ALTER TABLE public.gas_hoge_druk
         drop column if exists lengte_berekend,
