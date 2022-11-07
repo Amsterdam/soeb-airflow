@@ -63,7 +63,7 @@ with DAG(
         action_type="download",
         container=f"{osfilelocation}",
         object_id=f"{osfilewaternet}",
-        output_path=f"{creadirs.get(3)}",
+        output_path=f"{creadirs.get(3)}/{osfilewaternet}",
     )
 
     # Zip new waternet file
@@ -91,7 +91,7 @@ with DAG(
         action_type="upload",
         container=f"production",
         object_id="Waternet_Assets_Levering_2022_week44.zip",
-        output_path=f"{creadirs.get(3)}",
+        output_path=f"{creadirs.get(3)}/{weeksdict.get(0)}",
     )
 
     # delete old files from objectsore
