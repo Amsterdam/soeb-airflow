@@ -58,7 +58,7 @@ with DAG(
 
     # Download waternet file from objectstore to work old
     download_waternetfile = SwiftOperator(
-        task_id=f"download_new_waternetfile_{osfilewaternet}",
+        task_id=f"download_{osfilewaternet}",
         swift_conn_id="OBJECTSTORE_WATERNET",
         action_type="download",
         container=f"{osfilelocation}",
@@ -68,13 +68,13 @@ with DAG(
 
     # Zip new waternet file
     zip_new_waternetfile = BashOperator(
-        task_id=f"zip_to_{weeksdict.get(0)}",
+        task_id=f"zip_{weeksdict.get(0)}",
         bash_command=f"zip -q {creadirs.get(3)}/{weeksdict.get(0)} {creadirs.get(3)}/{osfilewaternet}" 
     )
     
     # Delete new kdrive object store
     delete_new_waternetfile = SwiftOperator(
-        task_id=f"delete_from_kdrive_os_{weeksdict.get(0)}",
+        task_id=f"delete_{weeksdict.get(0)}",
         swift_conn_id="OBJECTSTORE_WATERNET",
         action_type="delete",
         # container=f"{oskdrvfilelocation}",
@@ -85,7 +85,6 @@ with DAG(
     )
 
     # delete old files from objectsore
-
     # remove directorues
 
 # FLOW
