@@ -28,7 +28,7 @@ with DAG(
     # 2. Execute SQL
     sql_task = PostgresOnAzureOperator(
         postgres_conn_id="soeb_postgres",
-        task_id="set_datatype_date",
+        task_id="calc length from geometry",
         sql="""
         ALTER TABLE public.gas_hoge_druk
         drop column if exists lengte_berekend,
@@ -50,5 +50,5 @@ with DAG(
 
 dag.doc_md = """
     #### DAG summary
-    Aanroepen van een .sql file binnen airflow
+    Aanroepen van een .sql statement binnen airflow
     """
