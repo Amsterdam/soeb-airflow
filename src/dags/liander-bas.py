@@ -1,5 +1,3 @@
-import re
-
 from pathlib import Path
 from typing import Final
 
@@ -16,14 +14,8 @@ from sqlalchemy.engine.url import make_url
 
 
 DAG_ID: Final = "liander_test"
-#variables: dict[str,str] = Variable.get("liander_test", deserialize_json=True)# zie vars.yml
-#file_to_download: dict[str, list] = variables["file_to_download"]["zip_file"]
-#file_to_download: str = variables["files_to_download"]# zie vars.yml
-#files_to_proces: str = variables["files_to_proces"]
-#zip_file: str = file_to_download["zip_file"]
-# shp_file1: str = file_to_proces["Gas_Hoog"]# let op!: "spaties" in de zip_file niet toegestaan
-# shp_file2: str = file_to_proces["Gas_Laag"]
 
+# variabelen
 zip_file="Gas_Leidingen.zip"
 files_to_proces=["Gas_Hoge_Druk.shp","Gas_Lage_Druk.shp"]
 
@@ -85,8 +77,6 @@ with DAG(
         bash_command=f"ls {TMP_DIR} -R"
    
         )
-
-
     # 5. Dummy operator acts as an interface between parallel tasks
     # to another parallel tasks with different number of lanes
     #  (without this intermediar, Airflow will give an error)
@@ -120,10 +110,10 @@ with DAG(
     >> check_dir
     >> DAGsplitter 
     >> import_data_local_db
-    #for (ingest_data) in zip(import_data_local_db):
     )
 
 dag.doc_md = """
     #### DAG summary
-    This test dag met liander gasleidingen (oude data)
+    Dit is een test DAG met liander gasleidingen (oude data). Er wordt een zip gedownload van een objectstore. 
+    In deze .zip ziten 2 shp-files
     """
