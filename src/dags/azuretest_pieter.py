@@ -81,7 +81,7 @@ with DAG(
         # objects_to_del=f"{weeksdict.get(0)}",
         # container="geopackages",
         container="production",
-        objects_to_del="Waternet_Assets_Levering_2022_week44.zip",
+        objects_to_del=["Waternet_Assets_Levering_2022_week44.zip"],
     )
     
     # Test Upload Waternetfile
