@@ -104,7 +104,7 @@ with DAG(
     >> download_waternetfile
     >> zip_new_waternetfile
     >> delete_new_waternetfile
-    >> just_a_small_stap
+    >> just_a_small_stop
     )
 
 dag.doc_md = """
