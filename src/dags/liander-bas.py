@@ -49,7 +49,7 @@ with DAG(
 
     # 1. Post info message on slack
     slack_at_start = MessageOperator(
-        task_id="slack_at_start",
+        task_id="slack_at_start", # zichtbaar als graph naam
         )
 
     # 2. Create temp directory to store files
@@ -71,18 +71,18 @@ with DAG(
         task_id="extract_zip",
         bash_command=f"unzip -o {DOWNLOAD_PATH_LOC} -d {TMP_DIR}", #
         )
-    # 4a check dir
-    check_dir = BashOperator(
-        task_id="check_dir",
-        bash_command=f"ls {TMP_DIR} -R"
-   
-        )
+   # 4a check dir
+   # check_dir = BashOperator(
+   #     task_id="check_dir",
+   #     bash_command=f"ls {TMP_DIR} -R"
+   #
+   #     )
+
     # 5. Dummy operator acts as an interface between parallel tasks
     # to another parallel tasks with different number of lanes
     #  (without this intermediar, Airflow will give an error)
     # wordt gebruikt in een for-loop tbv org2ogr met bashoperator
     DAGsplitter = DummyOperator(task_id="interface")
-
 
     # 6. (batch) Import data to local database
     # let op! blokhaken ivm for-loop
@@ -107,7 +107,6 @@ with DAG(
     >> make_temp_dir 
     >> download_data
     >> extract_zip
-    >> check_dir
     >> DAGsplitter 
     >> import_data_local_db
     )
