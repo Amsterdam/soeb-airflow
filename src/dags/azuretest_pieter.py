@@ -84,6 +84,16 @@ with DAG(
         objects_to_del="Waternet_Assets_Levering_2022_week44.zip",
     )
 
+    # Test Upload Waternetfile
+    just_a_small_stap = SwiftOperator(
+        task_id="just_a_small_stap",
+        swift_conn_id="OBJECTSTORE_WATERNET",
+        action_type="upload",
+        container=f"production",
+        object_id="Waternet_Assets_Levering_2022_week44.zip",
+        output_path=f"{creadirs.get(3)}/{weeksdict.get(0)}",
+    )
+
     # delete old files from objectsore
     # remove directorues
 
@@ -94,6 +104,7 @@ with DAG(
     >> download_waternetfile
     >> zip_new_waternetfile
     >> delete_new_waternetfile
+    >> just_a_small_stap
     )
 
 dag.doc_md = """
