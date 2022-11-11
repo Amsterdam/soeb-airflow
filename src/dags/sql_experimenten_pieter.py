@@ -47,9 +47,29 @@ with DAG(
     # 2. Execute SQL
     sql_task1 = PostgresOnAzureOperator(
         postgres_conn_id="soeb_postgres",
-        task_id=f"{SOEB_DBNAME}-{SOEB_USER}",
+        task_id=f"Create_table",
         sql="""
-        DROP TABLE IF EXISTS public.test_pdsmit;
+        DROP TABLE IF EXISTS public.test_pds;
+        CREATE TABLE IF NOT EXISTS public.test_pds
+        (
+            teller integer NOT NULL,
+            surname character varying(30) COLLATE pg_catalog."default",
+            name character varying(30) COLLATE pg_catalog."default",
+            address character varying(50) COLLATE pg_catalog."default",
+            place character varying(50) COLLATE pg_catalog."default",
+            zip character varying(7) COLLATE pg_catalog."default",
+        )
+        WITH (
+            OIDS = FALSE
+        )
+        TABLESPACE pg_default;
+
+        ALTER TABLE IF EXISTS public.test_pds
+            OWNER to psqlAdmin;
+
+        GRANT SELECT ON TABLE public.test_pds TO PUBLIC;
+
+        GRANT ALL ON TABLE public.test_pds TO psqlAdmin;
         """
     )
 
