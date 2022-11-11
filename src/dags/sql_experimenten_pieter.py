@@ -50,6 +50,15 @@ with DAG(
         task_id=f"Create_table",
         sql="""
         DROP TABLE IF EXISTS public.test_pds;
+                CREATE TABLE IF NOT EXISTS public.test_pds
+        (
+            teller integer NOT NULL,
+            surname character varying(30) COLLATE pg_catalog."default",
+            name character varying(30) COLLATE pg_catalog."default",
+            address character varying(50) COLLATE pg_catalog."default",
+            place character varying(50) COLLATE pg_catalog."default",
+            zip character varying(7) COLLATE pg_catalog."default"
+        )
         """
     )
 
