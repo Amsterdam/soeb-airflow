@@ -15,6 +15,7 @@ with DAG(
     DAG_ID,
     description="Use a sql file from within the repository",
     default_args=default_args,
+    schedule_interval=None,
     user_defined_filters={"quote": quote_string},
     template_searchpath=["/"],
     on_failure_callback=get_contact_point_on_failure_callback(dataset_id=DAG_ID),
