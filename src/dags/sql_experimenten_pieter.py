@@ -48,7 +48,7 @@ with DAG(
     sql_task1 = PostgresOnAzureOperator(
         postgres_conn_id="soeb_postgres",
         task_id=f"Create_table",
-        psql=f"""
+        sql=f"""
         DROP TABLE IF EXISTS "{TABELNAAM}";
         CREATE TABLE IF NOT EXISTS "{TABELNAAM}"
         (
