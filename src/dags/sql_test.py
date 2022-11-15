@@ -8,11 +8,12 @@ from postgres_on_azure_operator import PostgresOnAzureOperator
 
 # Schema: https://schemas.data.amsterdam.nl/datasets/rioolnetwerk/dataset
 DAG_ID: Final = "sql_test"
+SQL_DIR = Path("dags/repo/src/dags/sql")
 
 # DAG definition
 with DAG(
     DAG_ID,
-    description="sql_test",
+    description="Use a sql file from within the repository",
     default_args=default_args,
     user_defined_filters={"quote": quote_string},
     template_searchpath=["/"],
@@ -27,10 +28,8 @@ with DAG(
     # 2. Execute SQL
     sql_task = PostgresOnAzureOperator(
         postgres_conn_id="soeb_postgres",
-        task_id="set_datatype_date",
-        sql="""
-            SELECT 1 FROM spatial_ref_sys;
-        """
+        task_id="run_dummy_sql",
+        sql=f"{SQL_DIR}/dummy.sql"
     )
 
 # FLOW
