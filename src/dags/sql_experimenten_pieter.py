@@ -70,9 +70,9 @@ with DAG(
     # 3. Execute SQL import uit shared folder van Azure met parameter testsql met meegegeven parameter - test
     sql_task2 = PostgresOnAzureOperator(
         postgres_conn_id="soeb_postgres",
-        task_id=f"Create_table_sared",
-        sql=CREATE_TABLE
-        params={"tablename": f"{TABELNAAM1}"},
+        task_id=f"Create_table_shared_folder",
+        sql=CREATE_TABLE,
+        params={"tablename": f"{TABELNAAM1}"},    
     )
 
 # FLOW
