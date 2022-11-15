@@ -14,7 +14,7 @@ from postgres_on_azure_operator import PostgresOnAzureOperator
 
 # Define variables
 DAG_ID: Final = "sql_experimenten_pieter"
-
+TABELNAAM = "public.test2_pds"
 # The local database connection.
 # This secret must exists in KV: `airflow-connections-soeb-postgres`
 # with the connection string present with protocol `postgresql://`
@@ -48,9 +48,9 @@ with DAG(
     sql_task1 = PostgresOnAzureOperator(
         postgres_conn_id="soeb_postgres",
         task_id=f"Create_table",
-        sql="""
-        DROP TABLE IF EXISTS public.test_pds;
-                CREATE TABLE IF NOT EXISTS public.test_pds
+        psql=f"""
+        DROP TABLE IF EXISTS "{TABELNAAM}";
+        CREATE TABLE IF NOT EXISTS "{TABELNAAM}"
         (
             teller integer NOT NULL,
             surname character varying(30) COLLATE pg_catalog."default",
