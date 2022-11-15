@@ -14,7 +14,7 @@ DAG_ID: Final = "sql_test"
 SQL_DIR = Path("dags/repo/src/dags/sql")
 
 def readSql(sqlFileName: str):
-    sql_path = SQL_DIR / sqlFileName .sql
+    sql_path = Path(f"{SQL_DIR}/{sqlFileName}.sql")
 
     # Read the SQL script into memory
     with open(sql_path, "r") as file:
