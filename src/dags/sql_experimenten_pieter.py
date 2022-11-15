@@ -12,9 +12,13 @@ from swift_operator import SwiftOperator
 from sqlalchemy.engine.url import make_url
 from postgres_on_azure_operator import PostgresOnAzureOperator
 
+# Import function from Azure shared folder
+from testsql import CREATE_TABLE
+
 # Define variables
 DAG_ID: Final = "sql_experimenten_pieter"
 TABELNAAM = "public.test2_pds"
+TABELNAAM1 = "public.test3_pds"
 # The local database connection.
 # This secret must exists in KV: `airflow-connections-soeb-postgres`
 # with the connection string present with protocol `postgresql://`
@@ -44,7 +48,7 @@ with DAG(
         task_id="slack_at_start",
     )
 
-    # 2. Execute SQL
+    # 2. Execute SQL met variabelen - (deze werkt)
     sql_task1 = PostgresOnAzureOperator(
         postgres_conn_id="soeb_postgres",
         task_id=f"Create_table",
@@ -63,10 +67,19 @@ with DAG(
     )
 
 
+    # 3. Execute SQL import uit shared folder van Azure met parameter testsql met meegegeven parameter - test
+    sql_task2 = PostgresOnAzureOperator(
+        postgres_conn_id="soeb_postgres",
+        task_id=f"Create_table_sared",
+        sql=CREATE_TABLE
+        params={"tablename": f"{TABELNAAM1}"},
+    )
+
 # FLOW
     (
     slack_at_start
     >>  sql_task1
+    >>  sql_task2
     )
 
 dag.doc_md = """
