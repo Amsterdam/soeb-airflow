@@ -8,7 +8,7 @@ from postgres_on_azure_operator import PostgresOnAzureOperator
 
 # Schema: https://schemas.data.amsterdam.nl/datasets/rioolnetwerk/dataset
 DAG_ID: Final = "sql_test"
-SQL_DIR = Path("dags/repo/src/dags/sql")
+SQL_DIR = Path("/dags/repo/src/dags/sql")
 
 # DAG definition
 with DAG(
